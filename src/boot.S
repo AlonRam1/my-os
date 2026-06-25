@@ -1,3 +1,4 @@
+#THIS CODE SECTION IS JUST FOR GRUB TO IDENTIFY THIS AS A VALID KERNEL
 .set MB2_MAGIC, 0xE85250D6
 .set ARCH_I386, 0
 .set HEADER_LEN, multiboot2_end - multiboot2_start
@@ -15,11 +16,15 @@ multiboot2_start:
     .long 8
 multiboot2_end:
 
+#--------------------END OF GRUB IDENTIFY SECTION---------------------------------#
+
 .section .bss
-.align 16
+
+.align 16 #aligns the next label (stack_bottom) to align with a 16 byte boundry (aka round to make label_address(mod 16) = 0) 
+
 stack_bottom:
-    .skip 16384
-stack_top:
+    .skip 16384 #reserve 16KB of memory for stack
+stack_top: #stack grows downward -> "stack_top" is really the bottom of the stack (where we start pushing)
 
 .section .text
 .global _start
@@ -27,7 +32,7 @@ stack_top:
 
 _start:
     cli
-    mov $stack_top, %esp
+    mov $stack_top, %esp #reminder: %esp is the register marking the top of the stack
 
     and $0xFFFFFFF0, %esp   # force 16-byte alignment (important)
 
