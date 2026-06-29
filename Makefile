@@ -15,8 +15,12 @@ $(BUILD)/kernel.o: src/kernel.c
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS) -c src/kernel.c -o $(BUILD)/kernel.o
 
-$(BUILD)/kernel.elf: $(BUILD)/boot.o $(BUILD)/kernel.o linker.ld
-	$(LD) -m elf_i386 -T linker.ld -nostdlib -o $(BUILD)/kernel.elf $(BUILD)/boot.o $(BUILD)/kernel.o
+$(BUILD)/vga.o: src/vga/vga.c
+	mkdir -p $(BUILD)
+	$(CC) $(CFLAGS) -c src/vga/vga.c -o $(BUILD)/vga.o
+
+$(BUILD)/kernel.elf: $(BUILD)/boot.o $(BUILD)/kernel.o linker.ld $(BUILD)/vga.o
+	$(LD) -m elf_i386 -T linker.ld -nostdlib -o $(BUILD)/kernel.elf $(BUILD)/boot.o $(BUILD)/kernel.o $(BUILD)/vga.o
 
 iso: $(BUILD)/kernel.elf grub.cfg
 	mkdir -p iso/boot/grub
