@@ -31,15 +31,11 @@ stack_top: #stack grows downward -> "stack_top" is really the bottom of the stac
 .extern kmain
 
 _start:
-    cli
-
+    cli #disable maskable interrupts so we can't call interrupts before the IDT is loaded.
     mov $stack_top, %esp
-
-    mov $0xCAFEBABE, %eax
-    push %eax
-    pop %eax
-
     call kmain
+
+
 .hang:
     hlt
     jmp .hang

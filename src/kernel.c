@@ -5,21 +5,15 @@
 void kmain(void)
 {
     volatile uint16_t cs;
-
-    puts("BOOT OK\n");
-
-    asm volatile("mov %%cs, %0" : "=r"(cs));
-
-    puts("CS captured\n");
-
-    idt_init();
-
+    puts("WHAT'S GOOD NIGGA?? WELCOME TO MYOS\n");
+    
+    idt_init(); //load IDT
     puts("IDT loaded\n");
 
-    asm volatile("int $0x0");
-
+    asm volatile("int $0x0"); //REMOVE: INT0 TEST
     puts("AFTER INT\n");
 
+    //enter idle loop until next interrupt
     while (1)
         asm volatile("hlt");
 }

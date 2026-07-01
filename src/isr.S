@@ -2,7 +2,7 @@
 .extern isr0_handler
 
 isr0:
-    pushal
+    pusha //push general purpose registers into stack
     call isr0_handler
-    popal
-    iret
+    popa //pop general purpose registers from stack
+    iret //interrupt return
