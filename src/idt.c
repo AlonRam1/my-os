@@ -1,6 +1,14 @@
 #include "idt.h"
 
 extern void isr0();
+extern void isr1();
+extern void isr3();
+extern void isr4();
+extern void isr5();
+extern void isr6();
+extern void isr8();
+extern void isr13();
+extern void isr14();
 
 static struct idt_entry idt[256] __attribute__((aligned(16))); //the IDT (static so scope is entire program. __attribute ... is a gcc extension that makes the variable address divisible by 16)
 static struct idt_ptr idtp; //pointer to the IDT
@@ -23,6 +31,15 @@ void idt_init()
 
     //start filling IDT
     set_gate(0, (uint32_t)isr0);
+    set_gate(1, (uint32_t)isr1);
+    set_gate(3, (uint32_t)isr3);
+    set_gate(4, (uint32_t)isr4);
+    set_gate(5, (uint32_t)isr5);
+    set_gate(6, (uint32_t)isr6);
+    set_gate(8, (uint32_t)isr8);
+    set_gate(13, (uint32_t)isr13);
+    set_gate(14, (uint32_t)isr14);
+
 
     //build IDT pointer
     idtp.limit = sizeof(idt) - 1;
