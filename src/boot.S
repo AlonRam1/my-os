@@ -32,12 +32,14 @@ stack_top: #stack grows downward -> "stack_top" is really the bottom of the stac
 
 _start:
     cli
-    mov $stack_top, %esp #reminder: %esp is the register marking the top of the stack
 
-    and $0xFFFFFFF0, %esp   # force 16-byte alignment (important)
+    mov $stack_top, %esp
+
+    mov $0xCAFEBABE, %eax
+    push %eax
+    pop %eax
 
     call kmain
-
 .hang:
     hlt
     jmp .hang
