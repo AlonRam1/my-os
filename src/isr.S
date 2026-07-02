@@ -60,22 +60,44 @@ isr6:
 //stubs for interrupts with return values
 
 isr8:
-    pusha
-    call isr8_handler
-    popa
-    add $4, %esp
+    cli
+    mov $0xB8000, %edi
+    movw $0x1F41, (%edi)   # 'A' white on blue
+
+    //add $4, %esp
+
     iret
 
 isr13:
-    pusha
-    call isr13_handler
-    popa
-    add $4, %esp
-    iret
+    cli
+    pusha               # 1. Save all GPRs (adds 32 bytes to stack)
+
+    # Print 'B' to the screen for visual confirmation
+    mov $0xB8002, %edi
+    movw $0x2F42, (%edi)
+
+    # 2. Advance the saved EIP past the 2-byte 'mov %eax, %ds' instruction
+    # With pusha active, EIP is at [esp + 32 (pusha) + 4 (error code)] = [esp + 36]
+    addl $2, 36(%esp)   
+
+    popa                # 3. Restore all GPRs
+    add $4, %esp        # 4. Remove the error code
+    iret                # 5. Return to the NEXT instruction!
 
 isr14:
-    pusha
-    call isr14_handler
-    popa
-    add $4, %esp
-    iret
+    cli
+    pusha               # 1. Save all GPRs (adds 32 bytes to stack)
+
+    # Print 'C' to the screen for visual confirmation
+    mov $0xB8004, %edi
+movw $0x4F43, (%edi)   # 'C'
+
+    # 2. Advance the saved EIP past the 2-byte 'mov %eax, %ds' instruction
+    # With pusha active, EIP is at [esp + 32 (pusha) + 4 (error code)] = [esp + 36]
+    addl $2, 36(%esp)   
+
+    popa                # 3. Restore all GPRs
+    add $4, %esp        # 4. Remove the error code
+    iret                # 5. Return to the NEXT instruction!
+
+
