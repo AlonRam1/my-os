@@ -61,10 +61,9 @@ isr6:
 
 isr8:
     cli
-    mov $0xB8000, %edi
-    movw $0x1F41, (%edi)   # 'A' white on blue
-
-    //add $4, %esp
+    //mov $0xB8000, %edi
+    //movw $0x1F41, (%edi)   # 'A' white on blue
+    call isr8_handler
 
     iret
 
@@ -73,9 +72,9 @@ isr13:
     pusha               # 1. Save all GPRs (adds 32 bytes to stack)
 
     # Print 'B' to the screen for visual confirmation
-    mov $0xB8002, %edi
-    movw $0x2F42, (%edi)
-
+    //mov $0xB8002, %edi
+    //movw $0x2F42, (%edi)
+    call isr13_handler	
     # 2. Advance the saved EIP past the 2-byte 'mov %eax, %ds' instruction
     # With pusha active, EIP is at [esp + 32 (pusha) + 4 (error code)] = [esp + 36]
     addl $2, 36(%esp)   
@@ -89,9 +88,9 @@ isr14:
     pusha               # 1. Save all GPRs (adds 32 bytes to stack)
 
     # Print 'C' to the screen for visual confirmation
-    mov $0xB8004, %edi
-movw $0x4F43, (%edi)   # 'C'
-
+    //mov $0xB8004, %edi
+    //movw $0x4F43, (%edi)   # 'C'
+    call isr14_handler
     # 2. Advance the saved EIP past the 2-byte 'mov %eax, %ds' instruction
     # With pusha active, EIP is at [esp + 32 (pusha) + 4 (error code)] = [esp + 36]
     addl $2, 36(%esp)   

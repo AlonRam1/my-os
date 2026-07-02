@@ -43,18 +43,15 @@ void isr8_handler()
 {
    volatile uint16_t* vga = (uint16_t*)0xB8000;
    puts("INTERRUPT 8 CALLED\n");
-    //vga[0] = 0x0F00 | 'X';
 }
 
 void isr13_handler()
 {		
     volatile uint16_t* vga = (uint16_t*)0xB8000;
     puts("INTERRUPT 13 CALLED CALLED\n");
-    //vga[c] = 0x0F00 | 'X';
 }
 void isr14_handler()
 {
     volatile uint16_t* vga = (uint16_t*)0xB8000;
     puts("INTERRUPT 14 CALLED\n");
-    //vga[2] = 0x0F00 | 'X';
 }
