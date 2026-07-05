@@ -1,5 +1,6 @@
 #include "vga.h"
 #include "idt.h"
+#include "pic.h"
 #include <stdint.h>
 
 static uint32_t page_directory[1024] __attribute__((aligned(4096)));
@@ -42,6 +43,7 @@ void kmain(void)
     
     idt_init(); //load IDT
     puts("IDT loaded\n");
+    pic_remap();
 
     asm volatile("int $0x0"); //REMOVE: INT0 TEST
     asm volatile("int $0x1"); 
@@ -69,6 +71,7 @@ void kmain(void)
     
 
     puts("AFTER INT\n");
+    asm volatile("sti");
 
     //enter idle loop until next interrupt
     while (1)

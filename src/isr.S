@@ -7,6 +7,8 @@
 .global isr8
 .global isr13
 .global isr14
+.global irq0
+.global irq1
 
 .extern isr0_handler
 .extern isr1_handler
@@ -17,6 +19,8 @@
 .extern isr8_handler
 .extern isr13_handler
 .extern isr14_handler
+.extern irq0_handler
+.extern irq1_handler
 
 isr0:
     pusha //push general purpose registers into stack
@@ -70,9 +74,7 @@ isr13:
     pusha         
 
     call isr13_handler	
-    # 2. Advance the saved EIP past the 2-byte 'mov %eax, %ds' instruction
-    # With pusha active, EIP is at [esp + 32 (pusha) + 4 (error code)] = [esp + 36]
-    addl $2, 36(%esp)   
+    addl $2, 36(%esp) //add 2 bytes to the return address (that is in esp) to skip the instruction that triggered the interrupt.   
 
     popa                
     add $4, %esp        
@@ -83,12 +85,27 @@ isr14:
     pusha               
 
     call isr14_handler
-    # 2. Advance the saved EIP past the 2-byte 'mov %eax, %ds' instruction
-    # With pusha active, EIP is at [esp + 32 (pusha) + 4 (error code)] = [esp + 36]
-    addl $2, 36(%esp)   
+    addl $2, 36(%esp) //add 2 bytes to the return address (that is in esp) to skip the instruction that triggered the interrupt.  
 
     popa               
     add $4, %esp        
     iret                
 
 
+irq0:
+    cli
+    pusha
+    call irq0_handler
+    popa
+    movb $0x20, %al
+    outb %al, $0x20
+    iret
+
+irq1:
+    cli
+    pusha
+    call irq1_handler
+    popa
+    movb $0x20, %al
+    outb %al, $0x20
+    iret

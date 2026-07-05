@@ -9,6 +9,8 @@ extern void isr6();
 extern void isr8();
 extern void isr13();
 extern void isr14();
+extern void irq0();
+extern void irq1();
 
 static struct idt_entry idt[256] __attribute__((aligned(16))); //the IDT (static so scope is entire program. __attribute ... is a gcc extension that makes the variable address divisible by 16)
 static struct idt_ptr idtp; //pointer to the IDT
@@ -39,6 +41,8 @@ void idt_init()
     set_gate(8, (uint32_t)isr8);
     set_gate(13, (uint32_t)isr13);
     set_gate(14, (uint32_t)isr14);
+    set_gate(32,(uint32_t)irq0);
+    set_gate(33,(uint32_t)irq1);
 
 
     //build IDT pointer
