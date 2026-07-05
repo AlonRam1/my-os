@@ -35,8 +35,12 @@ $(BUILD)/pic.o: src/pic.c
 	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS) -c src/pic.c -o $(BUILD)/pic.o
 
-$(BUILD)/kernel.elf: $(BUILD)/boot.o $(BUILD)/kernel.o $(BUILD)/vga.o $(BUILD)/idt.o $(BUILD)/isr.o $(BUILD)/isr-asm.o $(BUILD)/pic.o linker.ld
-	$(LD) -m elf_i386 -T linker.ld -nostdlib -o $(BUILD)/kernel.elf $(BUILD)/boot.o $(BUILD)/kernel.o $(BUILD)/vga.o $(BUILD)/idt.o $(BUILD)/isr.o $(BUILD)/isr-asm.o $(BUILD)/pic.o
+$(BUILD)/pmm.o: src/pmm.c
+	mkdir -p $(BUILD)
+	$(CC) $(CFLAGS) -c src/pmm.c -o $(BUILD)/pmm.o
+
+$(BUILD)/kernel.elf: $(BUILD)/boot.o $(BUILD)/kernel.o $(BUILD)/vga.o $(BUILD)/idt.o $(BUILD)/isr.o $(BUILD)/isr-asm.o $(BUILD)/pic.o $(BUILD)/pmm.o linker.ld
+	$(LD) -m elf_i386 -T linker.ld -nostdlib -o $(BUILD)/kernel.elf $(BUILD)/boot.o $(BUILD)/kernel.o $(BUILD)/vga.o $(BUILD)/idt.o $(BUILD)/isr.o $(BUILD)/isr-asm.o $(BUILD)/pic.o $(BUILD)/pmm.o
 
 iso: $(BUILD)/kernel.elf grub.cfg
 	mkdir -p iso/boot/grub

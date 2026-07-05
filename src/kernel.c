@@ -1,6 +1,7 @@
 #include "vga.h"
 #include "idt.h"
 #include "pic.h"
+#include "pmm.h"
 #include <stdint.h>
 
 static uint32_t page_directory[1024] __attribute__((aligned(4096)));
@@ -66,12 +67,15 @@ void kmain(void)
     volatile int *p = (int*)0x500000; // not mapped (above 4MB)
     *p = 123;
 
-
-
-    
-
     puts("AFTER INT\n");
     asm volatile("sti");
+
+     pmm_init(32 * 1024 * 1024); // pretend 32MB
+
+    void* a = alloc_page();
+    void* b = alloc_page();
+
+    free_page(a);
 
     //enter idle loop until next interrupt
     while (1)
