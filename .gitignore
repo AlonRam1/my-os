@@ -1,1 +1,4 @@
 /build
+/iso
+/linker.ld
+/myos.iso
