@@ -1,4 +1,8 @@
-/build
-/iso
-/linker.ld
-/myos.iso
+# Build artifacts
+build/
+iso/
+
+# Debug files
+*.o
+*.elf
+*.iso
