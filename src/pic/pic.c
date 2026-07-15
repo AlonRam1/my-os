@@ -27,29 +27,29 @@ void pic_remap(void)
 {
     uint8_t a1, a2;
 
-    // Save masks
+    //Save masks
     a1 = inb(0x21);
     a2 = inb(0xA1);
 
-    // Start initialization sequence (cascade mode)
+    //Start initialization sequence (cascade mode)
     outb(0x20, 0x11);
     outb(0xA0, 0x11);
 
-    // Set vector offsets
+    //Set vector offsets
     outb(0x21, 0x20); // IRQ0–7 -> INT32–39
     outb(0xA1, 0x28); // IRQ8–15 -> INT40–47
 
-    // Tell Master PIC there is a slave PIC at IRQ2
+    //Tell Master PIC there is a slave PIC at IRQ2
     outb(0x21, 0x04);
 
-    // Tell Slave PIC its cascade identity
+    //Tell Slave PIC its cascade identity
     outb(0xA1, 0x02);
 
-    // Set mode: 8086/88 (not 8080 mode)
+    //Set mode: 8086/88 (not 8080 mode)
     outb(0x21, 0x01);
     outb(0xA1, 0x01);
 
-    // Restore masks
+    //Restore masks
     outb(0x21, a1);
     outb(0xA1, a2);
 }

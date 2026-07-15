@@ -1,4 +1,5 @@
 .global switch_task
+.global switch_interrupt_context
 
 switch_task:
 
@@ -12,3 +13,9 @@ switch_task:
     popa
 
     ret
+
+switch_interrupt_context:
+    mov 4(%esp), %eax
+    mov %eax, %esp
+    popa
+    iret

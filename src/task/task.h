@@ -20,3 +20,8 @@ void task_init();
 int task_create(void (*entry)());
 void task_exit();
 void task_yield();
+void schedule();
+uint32_t schedule_interrupt(uint32_t* esp);
+void switch_task(uint32_t* old_esp, uint32_t new_esp);
+void switch_interrupt_context(uint32_t new_esp);
+

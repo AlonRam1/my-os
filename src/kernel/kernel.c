@@ -11,7 +11,7 @@ void task_a()
     while(1)
     {
         puts("A\n");
-        task_yield();
+        //task_yield();
     }
 }
 
@@ -20,7 +20,7 @@ void task_b()
     while(1)
     {
         puts("B\n");
-        task_yield();
+        //task_yield();	
     }
 }
 
@@ -72,9 +72,6 @@ void kmain(void)
 
     puts("unmapped\n");
 
-    //page fault test
-    *x = 456;
-
     //enable interrupts
     asm volatile("sti");
 
@@ -86,9 +83,8 @@ void kmain(void)
 
     while(1)
     {
-	task_yield();
+    	task_yield();
     }
-
 
     //idle loop 
     while (1)

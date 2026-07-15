@@ -23,3 +23,5 @@ void isr6_handler();
 void isr8_handler();
 void isr13_handler();
 void isr14_handler();
+void irq0_handler(uint32_t* esp);
+void irq1_handler();

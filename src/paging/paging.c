@@ -54,6 +54,12 @@ void map_page(uint32_t virt, uint32_t phys, uint32_t flags)
     {
         uint32_t* table = alloc_page();
 
+	if (!table)
+        {
+            puts("OUT OF MEMORY\n");
+            while(1);
+        }
+
         //clear page table
         for (int i = 0; i < 1024; i++)
         {
@@ -90,11 +96,16 @@ void unmap_page(uint32_t virt)
 
 void paging_init(void)
 {
-    //map 32MB of memory as a start
+    for (int i = 0; i < 1024; i++)
+    {
+        page_directory[i] = 0;
+        page_tables[i] = 0;
+    }
+
     for (uint32_t addr = 0; addr < 32 * 1024 * 1024; addr += PAGE_SIZE)
     {
         map_page(addr, addr, PRESENT | WRITABLE);
     }
 
-    enable_paging(page_directory); 
+    enable_paging(page_directory);
 }

@@ -82,23 +82,33 @@ isr13:
 
 isr14:
     cli
-    pusha               
+    pusha
 
+    push %esp
     call isr14_handler
-    addl $2, 36(%esp) //add 2 bytes to the return address (that is in esp) to skip the instruction that triggered the interrupt.  
+    add $4, %esp
 
-    popa               
-    add $4, %esp        
-    iret                
-
+    popa
+    add $4, %esp
+    iret               
 
 irq0:
     cli
+
     pusha
+
+    mov %esp, %eax #store current task stack in eax
+
+    #call the C handler with eax as the parameter
+    push %eax
     call irq0_handler
+
+    add $4, %esp #restore stack
+
+    mov %eax, %esp #move next task esp into esp
+
     popa
-    movb $0x20, %al
-    outb %al, $0x20
+
     iret
 
 irq1:

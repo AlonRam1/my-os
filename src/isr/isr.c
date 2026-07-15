@@ -1,12 +1,8 @@
 #include "vga/vga.h"
 #include "pic/pic.h"
+#include "task/task.h"
 #include <stdint.h>
 
-void puts(const char* s);
-uint8_t inb(uint16_t port);
-void pic_eoi(uint8_t irq);
-void pic_remap(void);
-void puthex(uint8_t v);
 
 
 
@@ -55,23 +51,24 @@ void isr8_handler()
 void isr13_handler()
 {		
     volatile uint16_t* vga = (uint16_t*)0xB8000;
-    puts("INTERRUPT 13 CALLED CALLED\n");
+    puts("INTERRUPT 13 CALLED\n");
 }
-void isr14_handler()
+
+void isr14_handler(uint32_t* regs)
 {
-    volatile uint16_t* vga = (uint16_t*)0xB8000;
-    puts("INTERRUPT 14 CALLED\n");
+   puts("INTERRUPT 14 CALLED\n"); 
 }
 
 volatile uint32_t ticks=0;
 
-void irq0_handler()
+uint32_t irq0_handler(uint32_t* esp)
 {
     ticks++;
-    pic_eoi(0); //notify PIC of end-of-interrupt
+
+    pic_eoi(0);
+
+    return schedule_interrupt(esp);
 }
-
-
 
 void irq1_handler(void)
 {
