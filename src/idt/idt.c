@@ -9,7 +9,7 @@ static void set_gate(int n, uint32_t handler)
 {
     idt[n].base_lo = handler & 0xFFFF; //lower half of isr address
     idt[n].base_hi = (handler >> 16) & 0xFFFF; //upper half of isr address
-    idt[n].sel = 0x10; //segment selector. points to the kernel code segment (0x10 is boilerplate)
+    idt[n].sel = 0x08; //segment selector. points to the kernel code segment (0x10 is boilerplate)
     idt[n].always0 = 0; //padding
     idt[n].flags = 0x8E; //flags (0x8E is boilerplate)
 }

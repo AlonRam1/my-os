@@ -68,7 +68,7 @@ int task_create(void (*entry)())
 
     //set up task stack
     *(--stack) = 0x202; //EFLAGS (interrupt enabled)
-    *(--stack) = 0x10; //kernel code segment
+    *(--stack) = 0x08; //kernel code segment
     *(--stack) = (uint32_t)entry; //EIP
     *(--stack) = 0; //eax
     *(--stack) = 0; //ecx

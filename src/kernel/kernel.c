@@ -4,6 +4,7 @@
 #include "pmm/pmm.h"
 #include "task/task.h"
 #include "paging/paging.h"
+#include "gdt/gdt.h"
 #include <stdint.h>
 
 void task_a()
@@ -27,6 +28,10 @@ void kmain(void)
 {
 
     puts("Booting MYOS...\n");
+
+    //GDT setup
+    gdt_init();
+    puts("GDT loaded\n");
 
     //IDT and PIC setup
     idt_init();
