@@ -8,11 +8,11 @@
 
 void task_a()
 {
-    while(1)
+    for(uint32_t i = 0; i < 50000000; i++)
     {
         puts("A\n");
-        //task_yield();
     }
+    task_exit();
 }
 
 void task_b()
@@ -20,7 +20,6 @@ void task_b()
     while(1)
     {
         puts("B\n");
-        //task_yield();	
     }
 }
 
@@ -80,11 +79,6 @@ void kmain(void)
 
     task_create(task_a);
     task_create(task_b);
-
-    while(1)
-    {
-    	task_yield();
-    }
 
     //idle loop 
     while (1)

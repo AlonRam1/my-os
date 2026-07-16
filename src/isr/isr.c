@@ -1,6 +1,7 @@
 #include "vga/vga.h"
 #include "pic/pic.h"
 #include "task/task.h"
+#include "timer/timer.h"
 #include <stdint.h>
 
 
@@ -59,15 +60,13 @@ void isr14_handler(uint32_t* regs)
    puts("INTERRUPT 14 CALLED\n"); 
 }
 
-volatile uint32_t ticks=0;
-
 uint32_t irq0_handler(uint32_t* esp)
 {
-    ticks++;
+    timer_tick();
 
     pic_eoi(0);
 
-    return schedule_interrupt(esp);
+    return schedule(esp);
 }
 
 void irq1_handler(void)
