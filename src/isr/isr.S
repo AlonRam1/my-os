@@ -7,6 +7,7 @@
 .global isr8
 .global isr13
 .global isr14
+.global isr128
 .global irq0
 .global irq1
 
@@ -90,7 +91,13 @@ isr14:
 
     popa
     add $4, %esp
-    iret               
+    iret
+
+isr128:
+    pusha
+    call isr128_handler
+    popa
+    iret    
 
 irq0:
     cli

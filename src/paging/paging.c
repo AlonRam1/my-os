@@ -2,12 +2,14 @@
 #include "paging.h"
 #include "pmm/pmm.h"
 #include "vga/vga.h"
+#include "user/user.h"
 
 #define PAGE_SIZE 4096
 
 // flags for memory regions
 #define PRESENT 0x1
 #define WRITABLE 0x2
+#define USER 0x4
 
 //array of addresses of page tables (alignment is needed for CPU convention)
 static uint32_t page_directory[1024] __attribute__((aligned(4096)));
@@ -39,7 +41,7 @@ static void enable_paging(uint32_t *page_directory_phys)
 //31                     22 21                    12 11          0
 //+------------------------+------------------------+-------------+
 //| Page Directory Index   |   Page Table Index    | Offset      |
-//|       10 bits          |       10 bits         |   12 bits   |
+//|       10 bits          |       10 bits         |  12 bits     |
 //+------------------------+------------------------+-------------+
 //
 //NOTE: "page directory index" is the page table, "page table index" is the page inside the page table.
@@ -54,7 +56,7 @@ void map_page(uint32_t virt, uint32_t phys, uint32_t flags)
     {
         uint32_t* table = alloc_page();
 
-	if (!table)
+        if (!table)
         {
             puts("OUT OF MEMORY\n");
             while(1);
@@ -71,6 +73,8 @@ void map_page(uint32_t virt, uint32_t phys, uint32_t flags)
     }
 
     page_tables[pd][pt] = (phys & 0xFFFFF000) | flags; //put physical address in the correct page index
+    if (flags & USER)
+        page_directory[pd] |= USER;
 
     //invalidate cached translation
     asm volatile("invlpg (%0)" :: "r"(virt) : "memory");
@@ -106,6 +110,12 @@ void paging_init(void)
     {
         map_page(addr, addr, PRESENT | WRITABLE);
     }
+
+    // allow user mode to execute user_test
+    map_page((uint32_t)user_test, (uint32_t)user_test, PRESENT | WRITABLE | USER);
+
+    //allow user mode to use its stack
+    map_page(0x8F000, 0x8F000,PRESENT | WRITABLE | USER);
 
     enable_paging(page_directory);
 }

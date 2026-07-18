@@ -6,6 +6,7 @@
 #include "paging/paging.h"
 #include "gdt/gdt.h"
 #include "tss/tss.h"
+#include "user/user.h"
 #include <stdint.h>
 
 void task_a()
@@ -38,15 +39,13 @@ void kmain(void)
     tss_init();
     puts("TSS loaded\n");
 
-
     //IDT and PIC setup
     idt_init();
     puts("IDT loaded\n");
 
     pic_remap();
     puts("PIC remapped\n");
-
-
+ 
     //pmm setup
     pmm_init(32 * 1024 * 1024);
     puts("PMM initialized\n");
@@ -69,7 +68,6 @@ void kmain(void)
 
     puts("mapped\n");
 
-
     // write to virtual address
     volatile int* x = (int*)0x500000;
     *x = 123;
@@ -87,9 +85,12 @@ void kmain(void)
 
     //task test
     task_init();
-
+ 
     task_create(task_a);
     task_create(task_b);
+
+    enter_user_mode();
+    puts("entered user mode");
 
     //idle loop 
     while (1)

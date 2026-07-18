@@ -32,6 +32,9 @@ void idt_init()
     set_gate(14, (uint32_t)isr14);
     set_gate(32,(uint32_t)irq0);
     set_gate(33,(uint32_t)irq1);
+    //usermode test
+    set_gate(128, (uint32_t)isr128);
+    idt[128].flags = 0xEE;
 
 
     //build IDT pointer

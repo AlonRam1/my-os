@@ -54,6 +54,7 @@ void gdt_init()
     //user data
     gdt_set_gate(4,0,0xFFFFFFFF,0xF2,0xCF);
 
+    //TSS
     gdt_set_tss(5, (uint32_t)&tss, sizeof(struct tss_entry) - 1);
 
     gdt_load(&gp);
