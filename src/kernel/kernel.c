@@ -5,6 +5,7 @@
 #include "task/task.h"
 #include "paging/paging.h"
 #include "gdt/gdt.h"
+#include "tss/tss.h"
 #include <stdint.h>
 
 void task_a()
@@ -32,6 +33,11 @@ void kmain(void)
     //GDT setup
     gdt_init();
     puts("GDT loaded\n");
+    
+    //TSS setup
+    tss_init();
+    puts("TSS loaded\n");
+
 
     //IDT and PIC setup
     idt_init();
