@@ -86,8 +86,8 @@ void kmain(void)
     //task test
     task_init();
  
-    task_create(task_a);
-    task_create(task_b);
+    //task_create(task_a);
+    //task_create(task_b);
 
     enter_user_mode();
     puts("entered user mode");

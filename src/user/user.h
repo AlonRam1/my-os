@@ -2,3 +2,4 @@
 
 void enter_user_mode();
 void user_test();
+void syscall_write(char c);

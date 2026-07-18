@@ -60,9 +60,15 @@ void isr14_handler(uint32_t* regs)
    puts("INTERRUPT 14 CALLED\n"); 
 }
 
-void isr128_handler()
+void isr128_handler(uint32_t* regs)
 {
-    puts("INT 128 CALLED\n");
+    uint32_t syscall = regs[7];
+
+    if (syscall == 1)
+    {
+        char c = (char)regs[4];
+        putchar(c);
+    }
 }
 
 uint32_t irq0_handler(uint32_t* esp)

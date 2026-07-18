@@ -95,9 +95,13 @@ isr14:
 
 isr128:
     pusha
+
+    push %esp
     call isr128_handler
+    add $4, %esp
+
     popa
-    iret    
+    iret   
 
 irq0:
     cli
