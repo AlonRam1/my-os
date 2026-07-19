@@ -79,11 +79,17 @@ int task_create_user(void (*entry)())
     if (task_count >= MAX_TASKS)
         return -1;
  
-    uint32_t* user_stack = (uint32_t*)(0x90000 + task_count*0x1000);
+    uint32_t user_stack_base = 0x90000 + task_count * 0x1000;
 
-    //create new stack for user task - and map it
     void* phys = alloc_page();
-    map_page((uint32_t)user_stack, (uint32_t)phys, 0x7);
+    map_page(user_stack_base, (uint32_t)phys, 0x7);
+
+    uint32_t* user_stack_top = (uint32_t*)(user_stack_base + 0x1000);
+
+    *(--user_stack_top) = (uint32_t)user_exit_stub;
+
+    int32_t exit_page = ((uint32_t)user_exit_stub) & 0xFFFFF000;
+    map_page(exit_page, exit_page, 0x7);
     //map task address
     uint32_t entry_page = ((uint32_t)entry) & 0xFFFFF000;
     map_page(entry_page, entry_page, 0x7);
@@ -93,7 +99,7 @@ int task_create_user(void (*entry)())
 
     //set up task stack (+push user esp and ss to switch rings) (+return address to kernel)
     *(--stack) = 0x23; //user SS
-    *(--stack) = (uint32_t)user_stack + 0x1000; //user ESP
+    *(--stack) = (uint32_t)user_stack_top; // user ESP
     *(--stack) = 0x202; //EFLAGS (interrupt enabled)
     *(--stack) = 0x1B; //user code segment (CS)
     *(--stack) = (uint32_t)entry; //eip to task (given as argument)
