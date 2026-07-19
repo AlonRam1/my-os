@@ -5,29 +5,28 @@
 enter_user_mode:
 
     cli
-
+    
+    #set all data access types to user data (0x20) with RPL user mode (3)
     mov $0x23, %ax
     mov %ax, %ds
     mov %ax, %es
     mov %ax, %fs
     mov %ax, %gs
 
-    # user SS
+
+    #build stack for iret to switch to user mode
+    #user SS
     push $0x23
-
-    # user ESP
+    #user ESP
     push $0x90000
-
-    # EFLAGS
+    #EFLAGS
     pushf
     pop %eax
     or $0x200, %eax
     push %eax
-
-    # user CS
+    #user CS
     push $0x1b
-
-    # user EIP
+    #user EIP
     push $user_test
 
     iret
