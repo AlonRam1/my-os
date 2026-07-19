@@ -1,9 +1,16 @@
 #include "syscall.h"
+#include "task/task.h"
 #include "vga/vga.h"
 
 void sys_write(char ebx)
 {
 	putchar(ebx);
+}
+
+void sys_exit()
+{
+	putchar('U');
+	task_exit();
 }
 
 void syscall_handler(uint32_t* regs)
@@ -13,13 +20,12 @@ void syscall_handler(uint32_t* regs)
 
     switch (eax)
     {
-        case SYS_WRITE:
+        case 1:
             sys_write((char)ebx);				
             break;
 
-        case SYS_EXIT:
-            puts("SYS_EXIT\n");
-            while (1);
+        case 0:
+            sys_exit();
             break;
 
         default:

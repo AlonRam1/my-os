@@ -3,6 +3,7 @@
 #include "task/task.h"
 #include "timer/timer.h"
 #include "scheduler/scheduler.h"
+#include "syscall/syscall.h"
 #include <stdint.h>
 
 void isr0_handler()
@@ -59,13 +60,7 @@ void isr14_handler(uint32_t* regs)
 
 void isr128_handler(uint32_t* regs)
 {
-    uint32_t syscall = regs[7];
-
-    if (syscall == 1)
-    {
-        char c = (char)regs[4];
-        putchar(c);
-    }
+    syscall_handler(regs);
 }
 
 uint32_t irq0_handler(uint32_t* esp)
