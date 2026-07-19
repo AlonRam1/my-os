@@ -14,11 +14,25 @@ void syscall_exit()
     asm volatile("mov $0, %%eax; int $128" ::: "eax");
 }
 
-void user_test()
+void user_test1()
 {
-    syscall_write('X');
-    syscall_exit();
+    while(1)
+    {
+    	syscall_write('X');
+    }
+}   
 
+void user_test2()
+{
+    while(1)
+    {
+    	syscall_write('Y');
+    }
+}
+
+void user_exit_stub()
+{
+    syscall_exit();
     while(1)
     {
         asm volatile("nop");

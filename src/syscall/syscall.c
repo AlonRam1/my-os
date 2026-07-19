@@ -9,7 +9,6 @@ void sys_write(char ebx)
 
 void sys_exit()
 {
-	putchar('U');
 	task_exit();
 }
 

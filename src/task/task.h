@@ -20,6 +20,7 @@ struct task
     uint32_t id;
     int state;
     uint32_t wake_tick;
+    uint32_t kernel_esp0;
 };
 
 extern struct task tasks[]; //array of tasks

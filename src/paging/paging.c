@@ -110,12 +110,6 @@ void paging_init(void)
     {
         map_page(addr, addr, PRESENT | WRITABLE);
     }
-
-    // allow user mode to execute user_test
-    map_page((uint32_t)user_test, (uint32_t)user_test, PRESENT | WRITABLE | USER);
-
-    //allow user mode to use its stack
-    map_page(0x8F000, 0x8F000,PRESENT | WRITABLE | USER);
-
+ 
     enable_paging(page_directory);
 }

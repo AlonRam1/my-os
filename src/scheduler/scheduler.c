@@ -1,9 +1,11 @@
 #include "scheduler.h"
 #include "task/task.h"
 #include "timer/timer.h"
+#include "tss/tss.h"
 
 #define TIME_QUANTUM 5 //how many ticks before task switch
 static uint32_t time_slice = 0; //which tick (modulu TIME_QUANTUM) we are on
+volatile int scheduler_lock = 0;
 
 //function that backs up stack state and chooses next task to execute
 uint32_t schedule(uint32_t* esp)
@@ -62,7 +64,10 @@ uint32_t schedule(uint32_t* esp)
     time_slice = 0;
 
     //switch new task state to running, and return new task's stack pointer to the asm handler to do the actual CPU task switch
-    tasks[current_task].state = TASK_RUNNING;
+    if(tasks[current_task].state != TASK_IDLE)
+        tasks[current_task].state = TASK_RUNNING;
+
+    tss_set_kernel_stack(tasks[current_task].kernel_esp0);
     return tasks[current_task].esp;
 }
 

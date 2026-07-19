@@ -1,9 +1,14 @@
 #include "task.h"
 #include "vga/vga.h"
 #include "timer/timer.h"
+#include "user/user.h"
+#include "pmm/pmm.h"
+#include "paging/paging.h"
+#include "user/user.h"
 #include <stdint.h>
 
-static uint8_t stacks[MAX_TASKS][STACK_SIZE]; //we back up our task stacks here (each row is a stack)
+static uint8_t stacks[MAX_TASKS][STACK_SIZE]; //space for backing up registers when context switching
+static uint8_t kernel_stacks[MAX_TASKS][STACK_SIZE]; //individual kernel stacks for tasks
 int current_task = -1;
 int task_count = 0;
 struct task tasks[MAX_TASKS];
@@ -61,6 +66,7 @@ int task_create(void (*entry)())
     tasks[id].id = id;
     tasks[id].state = TASK_READY;
     tasks[id].wake_tick = 0;
+    tasks[id].kernel_esp0 = (uint32_t)&kernel_stacks[id][STACK_SIZE];
 
     task_count++;
 
@@ -72,13 +78,22 @@ int task_create_user(void (*entry)())
 {
     if (task_count >= MAX_TASKS)
         return -1;
+ 
+    uint32_t* user_stack = (uint32_t*)(0x90000 + task_count*0x1000);
+
+    //create new stack for user task - and map it
+    void* phys = alloc_page();
+    map_page((uint32_t)user_stack, (uint32_t)phys, 0x7);
+    //map task address
+    uint32_t entry_page = ((uint32_t)entry) & 0xFFFFF000;
+    map_page(entry_page, entry_page, 0x7);
 
     int id = task_count;
     uint32_t* stack = (uint32_t*)&stacks[id][STACK_SIZE]; //stack variable starts at the top of the task's stack
 
-    //set up task stack (+push user esp and ss to switch rings)
+    //set up task stack (+push user esp and ss to switch rings) (+return address to kernel)
     *(--stack) = 0x23; //user SS
-    *(--stack) = 0x90000; //user ESP
+    *(--stack) = (uint32_t)user_stack + 0x1000; //user ESP
     *(--stack) = 0x202; //EFLAGS (interrupt enabled)
     *(--stack) = 0x1B; //user code segment (CS)
     *(--stack) = (uint32_t)entry; //eip to task (given as argument)
@@ -96,6 +111,8 @@ int task_create_user(void (*entry)())
     tasks[id].id = id;
     tasks[id].state = TASK_READY;
     tasks[id].wake_tick = 0;
+    tasks[id].kernel_esp0 = (uint32_t)&kernel_stacks[id][STACK_SIZE];
+
 
     task_count++;
 

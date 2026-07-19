@@ -94,6 +94,7 @@ isr14:
     iret
 
 isr128:
+    cli
     pusha
 
     push %esp
@@ -101,6 +102,7 @@ isr128:
     add $4, %esp
 
     popa
+    sti
     iret   
 
 irq0:
