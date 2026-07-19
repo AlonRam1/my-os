@@ -112,11 +112,13 @@ irq0:
 
     #call the C handler with eax as the parameter
     push %eax
-    call irq0_handler
+    call irq0_handler #irq0 handler calls schedule() function, that returns next task if it is time to switch
 
     add $4, %esp #restore stack
-
-    mov %eax, %esp #move next task stack pointer into esp
+    
+    #'schedule()' called by the irq0 handler returns the current stack to use (either this task's, or the next if time quantum reached), and stores it in eax
+    #we store that stack in esp, which means that this either switches the context to a new task, or does nothing if we are in the same task (eax = esp)
+    mov %eax, %esp
 
     popa
 
