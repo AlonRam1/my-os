@@ -79,17 +79,19 @@ int task_create_user(void (*entry)())
     if (task_count >= MAX_TASKS)
         return -1;
  
-    uint32_t user_stack_base = 0x90000 + task_count * 0x1000;
-
+    //set up individual user stack
+    uint32_t user_stack_base = 0x90000 + task_count * 0x1000; 
     void* phys = alloc_page();
     map_page(user_stack_base, (uint32_t)phys, 0x7);
-
+    
+    //push task exit stub address on top of user stack (reminder: stack is 1 page = 4kb = 0x1000 bytes)
     uint32_t* user_stack_top = (uint32_t*)(user_stack_base + 0x1000);
-
     *(--user_stack_top) = (uint32_t)user_exit_stub;
 
+    //map exit stub
     int32_t exit_page = ((uint32_t)user_exit_stub) & 0xFFFFF000;
     map_page(exit_page, exit_page, 0x7);
+
     //map task address
     uint32_t entry_page = ((uint32_t)entry) & 0xFFFFF000;
     map_page(entry_page, entry_page, 0x7);
