@@ -12,11 +12,15 @@ uint32_t schedule(uint32_t* esp)
 
     time_slice++;
 
+    //if we haven't reached the time quantum to switch tasks, and the current task is still alive, end the function without switching tasks
     if(time_slice < TIME_QUANTUM && tasks[current_task].state != TASK_DEAD)
     {
         return (uint32_t)esp;
     }
 
+    //IF THE ABOVE 'IF' RETURNS FALSE, THAT MEANS WE WANT TO SWITCH TASKS. THE CODE BELOW SWITCHES TASKS
+
+    //if the current task has a stack (aka we are not switching to the first task on the program -> 'current_task' != -1), back up the task stack and switch state to READY
     if (current_task >= 0)
     {
         tasks[current_task].esp = (uint32_t)esp;
@@ -27,6 +31,7 @@ uint32_t schedule(uint32_t* esp)
 
     int found = 0; //on task switch, check if found READY tasks to switch to
 
+    //search for READY tasks
     for(int i = 0; i < task_count; i++)
     {
         current_task++;
@@ -56,6 +61,7 @@ uint32_t schedule(uint32_t* esp)
 
     time_slice = 0;
 
+    //switch new task state to running, and return new task's stack pointer to the asm handler to do the actual CPU task switch
     tasks[current_task].state = TASK_RUNNING;
     return tasks[current_task].esp;
 }

@@ -2,10 +2,8 @@
 #include "pic/pic.h"
 #include "task/task.h"
 #include "timer/timer.h"
+#include "scheduler/scheduler.h"
 #include <stdint.h>
-
-
-
 
 void isr0_handler()
 {
@@ -51,7 +49,6 @@ void isr8_handler()
 
 void isr13_handler()
 {		
-    volatile uint16_t* vga = (uint16_t*)0xB8000;
     puts("INTERRUPT 13 CALLED\n");
 }
 
@@ -82,7 +79,7 @@ uint32_t irq0_handler(uint32_t* esp)
 
 void irq1_handler(void)
 {
-    //keyboard lookup table (name stands for keyboard US (layout))
+    //keyboard lookup table (name stands for keyboard US)
     static const char kbdus[128] = {
     0,
     27,        // Esc

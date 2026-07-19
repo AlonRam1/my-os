@@ -116,7 +116,7 @@ irq0:
 
     add $4, %esp #restore stack
 
-    mov %eax, %esp #move next task esp into esp
+    mov %eax, %esp #move next task stack pointer into esp
 
     popa
 

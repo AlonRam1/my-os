@@ -27,8 +27,7 @@ extern struct task tasks[]; //array of tasks
 void task_init();
 int task_create(void (*entry)());
 void task_exit();
-uint32_t schedule(uint32_t* esp);
-void switch_interrupt_context(uint32_t* old_esp, uint32_t new_esp);
 void task_sleep(uint32_t duration);
 void wake_tasks();
 void task_yield();
+int task_create_user(void (*entry)());
