@@ -14,20 +14,33 @@ void syscall_exit()
     asm volatile("mov $0, %%eax; int $128" ::: "eax");
 }
 
-void user_test1()
+void syscall_yield()
 {
-    while(1)
-    {
-    	syscall_write('X');
-    }
-}   
+    asm volatile("mov $2, %%eax; int $128" ::: "eax");
+}
+
+void syscall_sleep(uint32_t ticks)
+{
+    asm volatile("mov $3, %%eax;" "mov %0, %%ebx;" "int $128" : : "r"(ticks) : "eax", "ebx");}
 
 void user_test2()
 {
-    while(1)
-    {
-    	syscall_write('Y');
-    }
+    syscall_write('X');   
+}   
+
+void user_test1()
+{
+    syscall_write('A');
+
+    syscall_yield();
+
+    syscall_write('B');
+
+    syscall_sleep(10);
+
+    syscall_write('C');
+
+    syscall_exit();   
 }
 
 void user_exit_stub()

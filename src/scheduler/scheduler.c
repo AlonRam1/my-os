@@ -3,9 +3,7 @@
 #include "timer/timer.h"
 #include "tss/tss.h"
 
-#define TIME_QUANTUM 5 //how many ticks before task switch
-static uint32_t time_slice = 0; //which tick (modulu TIME_QUANTUM) we are on
-volatile int scheduler_lock = 0;
+uint32_t time_slice = 0; //which tick (modulu TIME_QUANTUM) we are on
 
 //function that backs up stack state and chooses next task to execute
 uint32_t schedule(uint32_t* esp)

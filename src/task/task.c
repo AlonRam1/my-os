@@ -5,6 +5,8 @@
 #include "pmm/pmm.h"
 #include "paging/paging.h"
 #include "user/user.h"
+#include "scheduler/scheduler.h"
+#include "tss/tss.h"
 #include <stdint.h>
 
 static uint8_t stacks[MAX_TASKS][STACK_SIZE]; //space for backing up registers when context switching
@@ -150,7 +152,8 @@ void wake_tasks()
 //switch tasks
 void task_yield()
 {
-    asm volatile("int $32");
+	time_slice = 5;
+	asm volatile("int $32");
 }
 
 //kill task
