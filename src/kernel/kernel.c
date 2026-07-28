@@ -8,6 +8,7 @@
 #include <memory/paging.h>
 #include <kernel/scheduler.h>
 #include <kernel/fs/ramfs.h>
+#include <kernel/fs/vfs.h>
 #include <arch/i386/tss.h>
 #include <pic/pic.h>
 #include <arch/i386/idt.h>
@@ -73,17 +74,21 @@ void kmain(void)
 
     ramfs_init();
 
+    vfs_init();
+
     ramfs_create("hello");
 
-    if(ramfs_find("hello"))
+    int fd = vfs_open("hello");
+
+    if(fd >= 0)
     {
-        puts("RAMFS OK\n");
+        puts("VFS OPEN OK\n");
     }
     else
     {
-        puts("RAMFS FAIL\n");
+        puts("VFS OPEN FAIL\n");
     }
-    
+
     //idle loop 
     while (1)
     {

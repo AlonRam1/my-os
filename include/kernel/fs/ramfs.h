@@ -19,3 +19,6 @@ void ramfs_init();
 int ramfs_create(const char* name);
 
 struct ramfs_file* ramfs_find(const char* name);
+
+int ramfs_read(struct ramfs_file* file, uint32_t offset, char* buffer, uint32_t size);
+int ramfs_write(struct ramfs_file* file, uint32_t offset, const char* buffer, uint32_t size);
