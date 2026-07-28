@@ -1,7 +1,7 @@
-#include "scheduler.h"
-#include "task/task.h"
-#include "timer/timer.h"
-#include "tss/tss.h"
+#include <kernel/scheduler.h>
+#include <kernel/task.h>
+#include <timer/timer.h>
+#include <arch/i386/tss.h>
 
 uint32_t time_slice = 0; //which tick (modulu TIME_QUANTUM) we are on
 

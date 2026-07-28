@@ -1,5 +1,5 @@
-#include "idt.h"
-#include "isr/isr.h"
+#include <arch/i386/idt.h>
+#include <arch/i386/isr.h>
 
 static struct idt_entry idt[256] __attribute__((aligned(16))); //the IDT (static so scope is entire program. __attribute ... is a gcc extension that makes the variable address divisible by 16)
 static struct idt_ptr idtp; //pointer to the IDT

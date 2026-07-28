@@ -1,12 +1,15 @@
-#include "vga/vga.h"
-#include "idt/idt.h"
-#include "pic/pic.h"
-#include "pmm/pmm.h"
-#include "task/task.h"
-#include "paging/paging.h"
-#include "gdt/gdt.h"
-#include "tss/tss.h"
-#include "user/user.h"
+#include <kernel/task.h>
+#include <vga/vga.h>
+#include <arch/i386/gdt.h>
+#include <timer/timer.h>
+#include <user/user.h>
+#include <memory/pmm.h>
+#include <memory/paging.h>
+#include <user/user.h>
+#include <kernel/scheduler.h>
+#include <arch/i386/tss.h>
+#include <pic/pic.h>
+#include <arch/i386/idt.h>
 #include <stdint.h>
 
 void kmain(void)

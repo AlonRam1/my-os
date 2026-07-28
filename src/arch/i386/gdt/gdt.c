@@ -1,5 +1,5 @@
-#include "gdt.h"
-#include "tss/tss.h"
+#include <arch/i386/gdt.h>
+#include <arch/i386/tss.h>
 
 extern void gdt_load(struct gdt_ptr*);
 

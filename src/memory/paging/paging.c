@@ -1,8 +1,8 @@
 #include <stdint.h>
-#include "paging.h"
-#include "pmm/pmm.h"
-#include "vga/vga.h"
-#include "user/user.h"
+#include <memory/paging.h>
+#include <memory/pmm.h>
+#include <vga/vga.h>
+#include <user/user.h>
 
 #define PAGE_SIZE 4096
 

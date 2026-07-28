@@ -1,9 +1,9 @@
-#include "vga/vga.h"
-#include "pic/pic.h"
-#include "task/task.h"
-#include "timer/timer.h"
-#include "scheduler/scheduler.h"
-#include "syscall/syscall.h"
+#include <vga/vga.h>
+#include <pic/pic.h>
+#include <kernel/task.h>
+#include <timer/timer.h>
+#include <kernel/scheduler.h>
+#include <kernel/syscall.h>
 #include <stdint.h>
 
 void isr0_handler()

@@ -1,4 +1,4 @@
-#include "timer.h"
+#include <timer/timer.h>
 
 volatile uint32_t ticks = 0;
 

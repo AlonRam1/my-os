@@ -1,6 +1,6 @@
-#include "syscall.h"
-#include "task/task.h"
-#include "vga/vga.h"
+#include <kernel/syscall.h>
+#include <kernel/task.h>
+#include <vga/vga.h>
 
 void sys_write(char ebx)
 {

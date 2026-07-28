@@ -1,4 +1,4 @@
-#include "tss.h"
+#include <arch/i386/tss.h>
 
 extern void tss_load();
 

@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include "user.h"
+#include <user/user.h>
 
 void syscall_write(char c)
 {

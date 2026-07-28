@@ -1,12 +1,12 @@
-#include "task.h"
-#include "vga/vga.h"
-#include "timer/timer.h"
-#include "user/user.h"
-#include "pmm/pmm.h"
-#include "paging/paging.h"
-#include "user/user.h"
-#include "scheduler/scheduler.h"
-#include "tss/tss.h"
+#include <kernel/task.h>
+#include <vga/vga.h>
+#include <timer/timer.h>
+#include <user/user.h>
+#include <memory/pmm.h>
+#include <memory/paging.h>
+#include <user/user.h>
+#include <kernel/scheduler.h>
+#include <arch/i386/tss.h>
 #include <stdint.h>
 
 static uint8_t stacks[MAX_TASKS][STACK_SIZE]; //space for backing up registers when context switching
