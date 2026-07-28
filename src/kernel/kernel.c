@@ -1,3 +1,4 @@
+#include <kernel/kernel.h>
 #include <kernel/task.h>
 #include <vga/vga.h>
 #include <arch/i386/gdt.h>
@@ -5,8 +6,8 @@
 #include <user/user.h>
 #include <memory/pmm.h>
 #include <memory/paging.h>
-#include <user/user.h>
 #include <kernel/scheduler.h>
+#include <kernel/fs/ramfs.h>
 #include <arch/i386/tss.h>
 #include <pic/pic.h>
 #include <arch/i386/idt.h>
@@ -69,6 +70,19 @@ void kmain(void)
  
     task_create_user(user_test1);
     task_create_user(user_test2);
+
+    ramfs_init();
+
+    ramfs_create("hello");
+
+    if(ramfs_find("hello"))
+    {
+        puts("RAMFS OK\n");
+    }
+    else
+    {
+        puts("RAMFS FAIL\n");
+    }
     
     //idle loop 
     while (1)
@@ -76,5 +90,3 @@ void kmain(void)
         asm volatile("hlt");
     }
 }
-
-
