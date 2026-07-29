@@ -91,8 +91,10 @@ int ata_write_sector(uint32_t sector, uint8_t* buffer)
     {
         uint16_t data = buffer[i*2] | (buffer[i*2+1] << 8);
 
-        asm volatile("outw %%ax, %%dx": : "a"(data), "d"(ATA_DATA));
+        asm volatile("outw %%ax, %%dx" : : "a"(data), "d"(ATA_DATA));
     }
+
+    while(inb(ATA_STATUS) & ATA_STATUS_BUSY);
 
     return 0;
 }

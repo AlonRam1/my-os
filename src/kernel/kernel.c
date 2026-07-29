@@ -10,6 +10,7 @@
 #include <kernel/fs/ramfs.h>
 #include <kernel/fs/vfs.h>
 #include <kernel/fs/block.h>
+#include <kernel/fs/myfs.h>
 #include <arch/i386/tss.h>
 #include <pic/pic.h>
 #include <arch/i386/idt.h>
@@ -84,12 +85,15 @@ void kmain(void)
     //ATA test
     ata_init();
     puts("ATA initialized\n");
+
+    myfs_format(16);
+    puts("MYFS formatted\n");
  
     uint8_t buffer[BLOCK_SIZE];
 
     block_read(1, buffer);
     block_write(1, buffer);
-
+ 
     //enable interrupts
     asm volatile("sti");
     
