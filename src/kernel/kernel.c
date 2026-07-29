@@ -92,7 +92,6 @@ void kmain(void)
     }
 
 
-    //MYFS create test
     if(myfs_create("hello") == 0)
     {
         puts("MYFS create OK\n");
@@ -102,6 +101,34 @@ void kmain(void)
         puts("MYFS create failed\n");
     }
 
+
+    struct myfs_inode* file = myfs_find("hello");
+
+    if(file)
+    {
+        puts("MYFS find OK\n");
+    }
+
+
+    uint8_t data[] = "hello world";
+
+    if(myfs_write(file, data, 11) > 0)
+    {
+        puts("MYFS write OK\n");
+    }
+
+
+    uint8_t read_buffer[32];
+
+    if(myfs_read(file, read_buffer, 11) > 0)
+    {
+        puts("MYFS read OK: ");
+        for(int i = 0; i < 11; i++)
+        {
+            putchar(read_buffer[i]);
+        }
+        puts("\n");
+    }
 
     //scheduler setup
     task_init();

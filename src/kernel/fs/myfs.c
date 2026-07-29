@@ -113,3 +113,86 @@ int myfs_create(const char* name)
 
     return -1;
 }
+
+
+//find file inode by name
+struct myfs_inode* myfs_find(const char* name)
+{
+    for(int i = 0; i < MYFS_MAX_FILES; i++)
+    {
+        if(inodes[i].used)
+        {
+            if(streq(inodes[i].name, name))
+                return &inodes[i];
+        }
+    }
+
+
+    return 0;
+}
+
+
+//write file data
+int myfs_write(struct myfs_inode* inode, const uint8_t* buffer, uint32_t size)
+{
+    if(!inode)
+        return -1;
+
+
+    if(size > MYFS_BLOCK_SIZE)
+        size = MYFS_BLOCK_SIZE;
+
+
+    uint8_t block[MYFS_BLOCK_SIZE];
+
+
+    for(int i = 0; i < MYFS_BLOCK_SIZE; i++)
+    {
+        block[i] = 0;
+    }
+
+
+    for(uint32_t i = 0; i < size; i++)
+    {
+        block[i] = buffer[i];
+    }
+
+
+    block_write(inode->block, block);
+
+
+    inode->size = size;
+
+
+    myfs_write_inodes();
+
+
+    return size;
+}
+
+
+//read file data
+int myfs_read(struct myfs_inode* inode, uint8_t* buffer, uint32_t size)
+{
+    if(!inode)
+        return -1;
+
+
+    if(size > inode->size)
+        size = inode->size;
+
+
+    uint8_t block[MYFS_BLOCK_SIZE];
+
+
+    block_read(inode->block, block);
+
+
+    for(uint32_t i = 0; i < size; i++)
+    {
+        buffer[i] = block[i];
+    }
+
+
+    return size;
+}

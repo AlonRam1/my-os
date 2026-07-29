@@ -38,3 +38,9 @@ void myfs_format(uint32_t total_blocks);
 int myfs_mount();
 
 int myfs_create(const char* name);
+
+struct myfs_inode* myfs_find(const char* name);
+
+int myfs_write(struct myfs_inode* inode, const uint8_t* buffer, uint32_t size);
+
+int myfs_read(struct myfs_inode* inode, uint8_t* buffer, uint32_t size);
