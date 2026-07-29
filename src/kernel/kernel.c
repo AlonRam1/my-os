@@ -86,8 +86,17 @@ void kmain(void)
     ata_init();
     puts("ATA initialized\n");
 
-    myfs_format(16);
+    //myfs test
+    myfs_format(20480);
     puts("MYFS formatted\n");
+    if(myfs_mount() == 0)
+    {
+	puts("MYFS mounted\n");
+    }
+    else
+    {
+        puts("MYFS mount failed\n");
+    }
  
     uint8_t buffer[BLOCK_SIZE];
 
