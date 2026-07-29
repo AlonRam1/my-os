@@ -9,9 +9,11 @@
 #include <kernel/scheduler.h>
 #include <kernel/fs/ramfs.h>
 #include <kernel/fs/vfs.h>
+#include <kernel/fs/block.h>
 #include <arch/i386/tss.h>
 #include <pic/pic.h>
 #include <arch/i386/idt.h>
+#include <drivers/ata/ata.h>
 #include <stdint.h>
 
 void kmain(void)
@@ -59,27 +61,17 @@ void kmain(void)
     puts("write OK\n");
 
 
-    // remove mapping
+    //remove mapping
     unmap_page(0x500000);
     puts("unmapped\n");
 
-    //enable interrupts
-    asm volatile("sti");
-
-    //task test
-    task_init();
- 
-    task_create_user(user_test1);
-    task_create_user(user_test2);
-
+    //initialize filesystem
     ramfs_init();
-
     vfs_init();
 
+    //filesystem test
     ramfs_create("hello");
-
     int fd = vfs_open("hello");
-
     if(fd >= 0)
     {
         puts("VFS OPEN OK\n");
@@ -89,6 +81,24 @@ void kmain(void)
         puts("VFS OPEN FAIL\n");
     }
 
+    //ATA test
+    ata_init();
+    puts("ATA initialized\n");
+ 
+    uint8_t buffer[BLOCK_SIZE];
+
+    block_read(1, buffer);
+    block_write(1, buffer);
+
+    //enable interrupts
+    asm volatile("sti");
+    
+    //task test
+    task_init();
+ 
+    task_create_user(user_test1);
+    task_create_user(user_test2);
+ 
     //idle loop 
     while (1)
     {
