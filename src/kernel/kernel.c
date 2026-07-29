@@ -56,7 +56,7 @@ void kmain(void)
     map_page(0x500000, (uint32_t)phys, 0x3);
     puts("mapped\n");
 
-    //write to virtual address
+    // write to virtual address
     volatile int* x = (int*)0x500000;
     *x = 123;
     puts("write OK\n");
@@ -71,23 +71,35 @@ void kmain(void)
     ramfs_init();
     vfs_init();
 
+
+    //initialize ATA
     ata_init();
     puts("ATA initialized\n");
 
-    uint8_t test[512];
 
-    for(int i = 0; i < 512; i++)
-    {
-        test[i] = 0xAA;
-    }
+    //initialize MYFS
+    myfs_format(20480);
+    puts("MYFS formatted\n");
 
-    if(ata_write_sector(1, test) == 0)
+
+    if(myfs_mount() == 0)
     {
-        puts("ATA WRITE OK\n");
+        puts("MYFS mounted\n");
     }
     else
     {
-        puts("ATA WRITE FAILED\n");
+        puts("MYFS mount failed\n");
+    }
+
+
+    //MYFS create test
+    if(myfs_create("hello") == 0)
+    {
+        puts("MYFS create OK\n");
+    }
+    else
+    {
+        puts("MYFS create failed\n");
     }
 
 
@@ -98,7 +110,7 @@ void kmain(void)
     task_create_user(user_test2);
 
 
-    //enable interrupts
+    //enable interrupts LAST
     asm volatile("sti");
 
 

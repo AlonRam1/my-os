@@ -1,9 +1,23 @@
 #include <kernel/fs/myfs.h>
 #include <kernel/fs/block.h>
+#include <kernel/string/string.h>
 
 static struct myfs_superblock superblock;
 
 static struct myfs_inode inodes[MYFS_MAX_FILES];
+
+
+//write inode table to disk
+static void myfs_write_inodes()
+{
+    for(int i = 0; i < 8; i++)
+    {
+        block_write(
+            MYFS_INODE_START + i,
+            ((uint8_t*)inodes) + (i * MYFS_BLOCK_SIZE)
+        );
+    }
+}
 
 
 //initialize a new filesystem on disk
@@ -28,14 +42,9 @@ void myfs_format(uint32_t total_blocks)
 
 
     //write inode table to disk
-    for(int i = 0; i < 8; i++)
-    {
-        block_write(
-            MYFS_INODE_START + i,
-            ((uint8_t*)inodes) + (i * MYFS_BLOCK_SIZE)
-        );
-    }
+    myfs_write_inodes();
 }
+
 
 //load filesystem metadata from disk
 int myfs_mount()
@@ -62,4 +71,45 @@ int myfs_mount()
 
 
     return 0;
+}
+
+
+//create a new file
+int myfs_create(const char* name)
+{
+    //check if file already exists
+    for(int i = 0; i < MYFS_MAX_FILES; i++)
+    {
+        if(inodes[i].used)
+        {
+            if(streq(inodes[i].name, name))
+                return -1;
+        }
+    }
+
+
+    //find free inode
+    for(int i = 0; i < MYFS_MAX_FILES; i++)
+    {
+        if(!inodes[i].used)
+        {
+            inodes[i].used = 1;
+            inodes[i].size = 0;
+
+            //one data block per file for now
+            inodes[i].block = MYFS_DATA_START + i;
+
+
+            strcopy(inodes[i].name, name);
+
+
+            //save inode table
+            myfs_write_inodes();
+
+            return 0;
+        }
+    }
+
+
+    return -1;
 }

@@ -1,4 +1,5 @@
 #include <kernel/fs/ramfs.h>
+#include <kernel/string/string.h>
 
 static struct ramfs_file files[RAMFS_MAX_FILES]; //table of all files
 
@@ -10,32 +11,6 @@ void ramfs_init()
         files[i].used = 0;
         files[i].size = 0;
     }
-}
-
-//our own string-equal (reminder: we do not have libc available in a kernel project)
-static int streq(const char* a, const char* b)
-{
-    while(*a || *b)
-    {
-        if(*a != *b)
-            return 0;
-
-        a++;
-        b++;
-    }
-
-    return 1;
-}
-
-//our own string-copy
-static void strcopy(char* dst, const char* src)
-{
-    while(*src)
-    {
-        *dst++ = *src++;
-    }
-
-    *dst = 0;
 }
 
 //find a file in the files array by name
