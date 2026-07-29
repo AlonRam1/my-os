@@ -56,7 +56,7 @@ void kmain(void)
     map_page(0x500000, (uint32_t)phys, 0x3);
     puts("mapped\n");
 
-    // write to virtual address
+    //write to virtual address
     volatile int* x = (int*)0x500000;
     *x = 123;
     puts("write OK\n");
@@ -66,54 +66,44 @@ void kmain(void)
     unmap_page(0x500000);
     puts("unmapped\n");
 
+
     //initialize filesystem
     ramfs_init();
     vfs_init();
 
-    //filesystem test
-    ramfs_create("hello");
-    int fd = vfs_open("hello");
-    if(fd >= 0)
-    {
-        puts("VFS OPEN OK\n");
-    }
-    else
-    {
-        puts("VFS OPEN FAIL\n");
-    }
-
-    //ATA test
     ata_init();
     puts("ATA initialized\n");
 
-    //myfs test
-    myfs_format(20480);
-    puts("MYFS formatted\n");
-    if(myfs_mount() == 0)
+    uint8_t test[512];
+
+    for(int i = 0; i < 512; i++)
     {
-	puts("MYFS mounted\n");
+        test[i] = 0xAA;
+    }
+
+    if(ata_write_sector(1, test) == 0)
+    {
+        puts("ATA WRITE OK\n");
     }
     else
     {
-        puts("MYFS mount failed\n");
+        puts("ATA WRITE FAILED\n");
     }
- 
-    uint8_t buffer[BLOCK_SIZE];
 
-    block_read(1, buffer);
-    block_write(1, buffer);
- 
-    //enable interrupts
-    asm volatile("sti");
-    
-    //task test
+
+    //scheduler setup
     task_init();
- 
+
     task_create_user(user_test1);
     task_create_user(user_test2);
- 
-    //idle loop 
-    while (1)
+
+
+    //enable interrupts
+    asm volatile("sti");
+
+
+    //idle loop
+    while(1)
     {
         asm volatile("hlt");
     }
