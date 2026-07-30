@@ -65,11 +65,8 @@ void kmain(void)
     unmap_page(0x500000);
     puts("unmapped\n");
 
-
     //initialize filesystem
-    ramfs_init();
     vfs_init();
-
 
     //initialize ATA
     ata_init();
@@ -97,7 +94,6 @@ void kmain(void)
         }
     }
 
-
     //MYFS create test
     if(myfs_create("hello") == 0)
     {
@@ -107,7 +103,6 @@ void kmain(void)
     {
         puts("MYFS create failed\n");
     }
-
 
     //MYFS find test
     struct myfs_inode* file = myfs_find("hello");
@@ -121,7 +116,6 @@ void kmain(void)
         puts("MYFS find failed\n");
     }
 
-
     //MYFS write test
     uint8_t write_buffer[] = "hello world";
 
@@ -133,7 +127,6 @@ void kmain(void)
     {
         puts("MYFS write failed\n");
     }
-
 
     //MYFS read test
     uint8_t read_buffer[32];
@@ -154,17 +147,14 @@ void kmain(void)
         puts("MYFS read failed\n");
     }
 
-
     //scheduler setup
     task_init();
 
     task_create_user(user_test1);
     task_create_user(user_test2);
 
-
     //enable interrupts LAST
     asm volatile("sti");
-
 
     //idle loop
     while(1)
