@@ -53,7 +53,6 @@ iso: $(BUILD)/kernel.elf grub.cfg
 
 
 run: iso
-	qemu-img create -f raw disk.img 10M
 	qemu-system-i386 -cdrom myos.iso -drive file=disk.img,format=raw,if=ide
 
 debug: iso

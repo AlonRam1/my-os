@@ -12,10 +12,7 @@ static void myfs_write_inodes()
 {
     for(int i = 0; i < 8; i++)
     {
-        block_write(
-            MYFS_INODE_START + i,
-            ((uint8_t*)inodes) + (i * MYFS_BLOCK_SIZE)
-        );
+        block_write(MYFS_INODE_START + i, ((uint8_t*)inodes) + (i * MYFS_BLOCK_SIZE));
     }
 }
 
@@ -52,23 +49,17 @@ int myfs_mount()
     //read superblock
     block_read(0, (uint8_t*)&superblock);
 
-
     //check filesystem magic number
     if(superblock.magic != MYFS_MAGIC)
     {
         return -1;
     }
 
-
     //read inode table
     for(int i = 0; i < 8; i++)
     {
-        block_read(
-            MYFS_INODE_START + i,
-            ((uint8_t*)inodes) + (i * MYFS_BLOCK_SIZE)
-        );
+        block_read(MYFS_INODE_START + i, ((uint8_t*)inodes) + (i * MYFS_BLOCK_SIZE));
     }
-
 
     return 0;
 }
@@ -87,7 +78,6 @@ int myfs_create(const char* name)
         }
     }
 
-
     //find free inode
     for(int i = 0; i < MYFS_MAX_FILES; i++)
     {
@@ -99,9 +89,7 @@ int myfs_create(const char* name)
             //one data block per file for now
             inodes[i].block = MYFS_DATA_START + i;
 
-
             strcopy(inodes[i].name, name);
-
 
             //save inode table
             myfs_write_inodes();
@@ -109,7 +97,6 @@ int myfs_create(const char* name)
             return 0;
         }
     }
-
 
     return -1;
 }
@@ -127,7 +114,6 @@ struct myfs_inode* myfs_find(const char* name)
         }
     }
 
-
     return 0;
 }
 
@@ -138,34 +124,26 @@ int myfs_write(struct myfs_inode* inode, const uint8_t* buffer, uint32_t size)
     if(!inode)
         return -1;
 
-
     if(size > MYFS_BLOCK_SIZE)
         size = MYFS_BLOCK_SIZE;
 
-
     uint8_t block[MYFS_BLOCK_SIZE];
-
 
     for(int i = 0; i < MYFS_BLOCK_SIZE; i++)
     {
         block[i] = 0;
     }
 
-
     for(uint32_t i = 0; i < size; i++)
     {
         block[i] = buffer[i];
     }
 
-
     block_write(inode->block, block);
-
 
     inode->size = size;
 
-
     myfs_write_inodes();
-
 
     return size;
 }
@@ -177,22 +155,17 @@ int myfs_read(struct myfs_inode* inode, uint8_t* buffer, uint32_t size)
     if(!inode)
         return -1;
 
-
     if(size > inode->size)
         size = inode->size;
 
-
     uint8_t block[MYFS_BLOCK_SIZE];
 
-
     block_read(inode->block, block);
-
 
     for(uint32_t i = 0; i < size; i++)
     {
         buffer[i] = block[i];
     }
-
 
     return size;
 }

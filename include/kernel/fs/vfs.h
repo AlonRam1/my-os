@@ -1,19 +1,20 @@
 #pragma once
 
 #include <stdint.h>
-#include <kernel/fs/ramfs.h>
+#include <kernel/fs/myfs.h>
 
 #define VFS_MAX_FILES 32
 
 struct file_descriptor
 {
-    struct ramfs_file* file;
+    struct myfs_inode* file;
     uint32_t position;
     int used;
 };
 
-
 void vfs_init();
+
+int vfs_create(const char* name);
 
 int vfs_open(const char* name);
 

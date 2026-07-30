@@ -61,7 +61,6 @@ void kmain(void)
     *x = 123;
     puts("write OK\n");
 
-
     //remove mapping
     unmap_page(0x500000);
     puts("unmapped\n");
@@ -76,22 +75,30 @@ void kmain(void)
     ata_init();
     puts("ATA initialized\n");
 
-
     //initialize MYFS
-    myfs_format(20480);
-    puts("MYFS formatted\n");
-
-
     if(myfs_mount() == 0)
     {
         puts("MYFS mounted\n");
     }
     else
     {
-        puts("MYFS mount failed\n");
+        puts("MYFS not found, formatting\n");
+
+        myfs_format(20480);
+        puts("MYFS formatted\n");
+
+        if(myfs_mount() == 0)
+        {
+            puts("MYFS mounted after format\n");
+        }
+        else
+        {
+            puts("MYFS mount failed\n");
+        }
     }
 
 
+    //MYFS create test
     if(myfs_create("hello") == 0)
     {
         puts("MYFS create OK\n");
@@ -102,33 +109,51 @@ void kmain(void)
     }
 
 
+    //MYFS find test
     struct myfs_inode* file = myfs_find("hello");
 
     if(file)
     {
         puts("MYFS find OK\n");
     }
-
-
-    uint8_t data[] = "hello world";
-
-    if(myfs_write(file, data, 11) > 0)
+    else
     {
-        puts("MYFS write OK\n");
+        puts("MYFS find failed\n");
     }
 
 
+    //MYFS write test
+    uint8_t write_buffer[] = "hello world";
+
+    if(myfs_write(file, write_buffer, 11) > 0)
+    {
+        puts("MYFS write OK\n");
+    }
+    else
+    {
+        puts("MYFS write failed\n");
+    }
+
+
+    //MYFS read test
     uint8_t read_buffer[32];
 
     if(myfs_read(file, read_buffer, 11) > 0)
     {
         puts("MYFS read OK: ");
+
         for(int i = 0; i < 11; i++)
         {
             putchar(read_buffer[i]);
         }
+
         puts("\n");
     }
+    else
+    {
+        puts("MYFS read failed\n");
+    }
+
 
     //scheduler setup
     task_init();
