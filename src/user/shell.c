@@ -2,6 +2,7 @@
 #include <kernel/terminal.h>
 #include <kernel/syscall.h>
 #include <kernel/string/string.h>
+#include <vga/vga.h>
 #include <stdint.h>
 
 //parse given string into command and parameters
@@ -37,6 +38,10 @@ static void shell_execute(const char* command, const char* argument)
     else if(streq(command, "cat"))
     {
         terminal_write("cat command\n");
+    }
+    else if(streq(command, "clear"))
+    {
+       clearscreen(); 
     }
     else
     {

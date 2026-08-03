@@ -2,7 +2,7 @@
 
 volatile uint16_t* vga = (uint16_t*)0xB8000;
 
-#define SCROLLUP 14
+#define TERMINALHEIGHT 14
 #define ROWS 25
 #define COLS 80
 
@@ -19,6 +19,16 @@ void clearline(uint8_t r)
     }
 }
 
+void clearscreen()
+{
+	for(int i = 0 ; i < ROWS ; i++)
+	{
+		clearline(i);
+	}
+	row = 0;
+	col = 0;
+}
+
 void copyline(uint8_t oldrow, uint8_t newrow)
 {
     if(oldrow >= ROWS || newrow >= ROWS)
@@ -33,12 +43,12 @@ void copyline(uint8_t oldrow, uint8_t newrow)
 
 void scrollup()
 {
-	for(int i = 1; i < SCROLLUP ; i++)
+	for(int i = 1; i < TERMINALHEIGHT ; i++)
 	{
 		copyline(i, i-1);
 	}
-	clearline(SCROLLUP - 1);
-	row = SCROLLUP - 1;
+	clearline(TERMINALHEIGHT - 1);
+	row = TERMINALHEIGHT - 1;
 	col = 0;
 }
 
@@ -63,7 +73,7 @@ void putchar(char c)
         }
     }
 
-    if (row >= SCROLLUP)
+    if (row >= TERMINALHEIGHT)
     {
         scrollup();
     }
