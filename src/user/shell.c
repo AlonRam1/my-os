@@ -1,25 +1,44 @@
 #include <user/shell.h>
 #include <kernel/terminal.h>
 #include <kernel/syscall.h>
+#include <kernel/string/string.h>
 #include <stdint.h>
 
 
 void shell_task()
 {
-    char buffer[64]; //buffer to write into from terminal buffer 
+    char buffer[64];
 
-    terminal_write("MYOS shell started\n> "); //test
+    terminal_write("MYOS shell started\n> ");
 
     while(1)
     {
-        int count = terminal_readline(buffer, 64); //read from terminal into our buffer
+        int count = terminal_readline(buffer, 64);
+
+        terminal_write("\n");
+
         if(count > 0)
         {
-            terminal_write("\n");
-            terminal_write(buffer);
-            terminal_write("\n> ");
+            if(streq(buffer, "echo"))
+            {
+                terminal_write("echo command\n");
+            }
+            else if(streq(buffer, "ls"))
+            {
+                terminal_write("ls command\n");
+            }
+            else if(streq(buffer, "cat"))
+            {
+                terminal_write("cat command\n");
+            }
+            else
+            {
+                terminal_write("Unknown command\n");
+            }
         }
 
-        asm volatile("int $0x80" : : "a"(SYS_YIELD)); //call syscall "yield" 
+        terminal_write("> ");
+
+        asm volatile("int $0x80" : : "a"(SYS_YIELD));
     }
 }
