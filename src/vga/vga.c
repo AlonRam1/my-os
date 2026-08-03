@@ -68,7 +68,15 @@ void putchar(char c)
 {
     asm volatile("cli");
 
-    if (c == '\n')
+    if (c == '\b')
+    {
+        if (col > 0)
+        {
+            col--;
+            vga[row * 80 + col] = ((uint16_t)0x0F << 8) | ' ';
+        }
+    }
+    else if (c == '\n')
     {
         row++;
         col = 0;
