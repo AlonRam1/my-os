@@ -1,5 +1,6 @@
 #include <kernel/syscall.h>
 #include <kernel/task.h>
+#include <drivers/keyboard/keyboard.h>
 #include <vga/vga.h>
 
 void sys_write(char ebx)
@@ -20,6 +21,11 @@ void sys_yield()
 void sys_sleep(uint32_t ebx)
 {
 	task_sleep(ebx);
+}
+
+void sys_read(char* buffer)
+{
+    keyboard_read(buffer,128);
 }
 
 void syscall_handler(uint32_t* regs)
@@ -43,7 +49,11 @@ void syscall_handler(uint32_t* regs)
 	 
 	case SYS_SLEEP:
             sys_sleep(ebx);
-            break;    
+            break;
+
+	case SYS_READ:
+	    sys_read((char*)ebx);
+	    break;
 
         default:
             puts("UNKNOWN SYSCALL\n");

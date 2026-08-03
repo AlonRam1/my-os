@@ -4,6 +4,7 @@
 #include <timer/timer.h>
 #include <kernel/scheduler.h>
 #include <kernel/syscall.h>
+#include <drivers/keyboard/keyboard.h>
 #include <stdint.h>
 
 void isr0_handler()
@@ -74,40 +75,5 @@ uint32_t irq0_handler(uint32_t* esp)
 
 void irq1_handler(void)
 {
-    //keyboard lookup table (name stands for keyboard US)
-    static const char kbdus[128] = {
-    0,
-    27,        // Esc
-    '1','2','3','4','5','6','7','8','9','0','-','=',
-    '\b',
-    '\t',
-    'q','w','e','r','t','y','u','i','o','p','[',']',
-    '\n',
-    0,
-    'a','s','d','f','g','h','j','k','l',';','\'','`',
-    0,
-    '\\',
-    'z','x','c','v','b','n','m',',','.','/',
-    0,
-    '*',
-    0,
-    ' ',
-};
-
-    uint8_t sc = inb(0x60); //0x60 is the keyboard data port
-
-    // ignore key releases
-    if (sc & 0x80) //if given value is a key release (marked by bit 7 -> hence why we use mask 0x80)
-    {
-        pic_eoi(1);
-        return;
-    }
-
-    char c = kbdus[sc];
-
-    if (c)
-        putchar(c);
-
-    pic_eoi(1); //notify PIC of end-of-interrupt
-
+    keyboard_handler();
 }
