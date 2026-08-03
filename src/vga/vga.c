@@ -2,8 +2,45 @@
 
 volatile uint16_t* vga = (uint16_t*)0xB8000;
 
+#define SCROLLUP 14
+#define ROWS 25
+#define COLS 80
+
 static int row = 0;
 static int col = 0;
+
+void clearline(uint8_t r)
+{
+    if(r >= ROWS)
+	return;
+    for(int i = 0; i < COLS ; i++)
+    {
+	vga[r * COLS + i] = ((uint16_t)0x07 << 8) | ' ';
+    }
+}
+
+void copyline(uint8_t oldrow, uint8_t newrow)
+{
+    if(oldrow >= ROWS || newrow >= ROWS)
+	return;
+
+    for(int i = 0; i < COLS ; i++)
+    {
+	vga[newrow * COLS + i] = vga[oldrow * COLS + i];
+    }
+
+}
+
+void scrollup()
+{
+	for(int i = 1; i < SCROLLUP ; i++)
+	{
+		copyline(i, i-1);
+	}
+	clearline(SCROLLUP - 1);
+	row = SCROLLUP - 1;
+	col = 0;
+}
 
 void putchar(char c)
 {
@@ -16,20 +53,19 @@ void putchar(char c)
     }
     else
     {
-        vga[row * 80 + col] = (0x0F << 8) | c;
+        vga[row * COLS + col] = (0x0F << 8) | c;
         col++;
 
-        if (col >= 80)
+        if (col >= COLS)
         {
             col = 0;
             row++;
         }
     }
 
-    if (row >= 25)
+    if (row >= SCROLLUP)
     {
-        row = 0;   // temporary wrap (no scrolling yet)
-        col = 0;
+        scrollup();
     }
 
     asm volatile("sti");
@@ -37,67 +73,22 @@ void putchar(char c)
 
 void puts(const char* s)
 {
-    asm volatile("cli");
-
     while (*s)
     {
         char c = *s++;
-
-        if (c == '\n')
-        {
-            row++;
-            col = 0;
-        }
-        else
-        {
-            vga[row * 80 + col] = (0x0F << 8) | c;
-            col++;
-
-            if (col >= 80)
-            {
-                col = 0;
-                row++;
-            }
-        }
-
-        if (row >= 25)
-        {
-            row = 0;
-            col = 0;
-        }
+        putchar(c); 
     }
-
-    asm volatile("sti");
 }
 
 const char hex[] = "0123456789ABCDEF";
 
 void puthex(uint8_t v)
 {
-
-    asm volatile("cli");
-
     char high = hex[(v >> 4) & 0xF];
     char low  = hex[v & 0xF];
 
-    vga[row * 80 + col] = (0x0F << 8) | high;
-    col++;
-
-    vga[row * 80 + col] = (0x0F << 8) | low;
-    col++;
-
-    //page bounds
-    if (col >= 80)
-    {
-        col = 0;
-        row++;
-    }
-
-    if (row >= 25)
-    {
-        row = 0;
-        col = 0;
-    }
-
-    asm volatile("sti");
+    putchar(high);
+    putchar(low);
 }
+
+
