@@ -4,6 +4,7 @@
 #include <kernel/string/string.h>
 #include <stdint.h>
 
+//parse given string into command and parameters
 static void shell_parse(char* line, char** command, char** argument)
 {
     *command = line;
@@ -47,25 +48,23 @@ void shell_task()
 {
     char buffer[64];
 
-    terminal_write("MYOS shell started\n> ");
-
     while(1)
     {
-        int count = terminal_readline(buffer, 64);
+        int count = terminal_readline(buffer, 64); //read command from user
 
         terminal_write("\n");
 
         if(count > 0)
         {
             char* command;
-            char* argument;
+            char* arguments;
 
-            shell_parse(buffer, &command, &argument);
-            shell_execute(command, argument);
+            shell_parse(buffer, &command, &arguments); //parse into command + parameters
+            shell_execute(command, arguments); //execute the command
         }
 
         terminal_write("> ");
 
-        asm volatile("int $0x80" : : "a"(SYS_YIELD));
+        asm volatile("int $0x80" : : "a"(SYS_YIELD)); //call sys_yield
     }
 }
