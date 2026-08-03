@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <pic/pic.h>
 
 volatile uint16_t* vga = (uint16_t*)0xB8000;
 
@@ -8,6 +9,17 @@ volatile uint16_t* vga = (uint16_t*)0xB8000;
 
 static int row = 0;
 static int col = 0;
+
+void update_cursor()
+{
+    uint16_t pos = row * 80 + col;
+
+    outb(0x3D4, 0x0F);
+    outb(0x3D5, (uint8_t)(pos & 0xFF));
+
+    outb(0x3D4, 0x0E);
+    outb(0x3D5, (uint8_t)((pos >> 8) & 0xFF));
+}
 
 void clearline(uint8_t r)
 {
@@ -78,6 +90,7 @@ void putchar(char c)
         scrollup();
     }
 
+    update_cursor();
     asm volatile("sti");
 }
 
