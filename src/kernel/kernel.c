@@ -32,7 +32,6 @@ void kmain(void)
 
     //IDT and PIC setup
     idt_init();
-
     pic_remap();
 
     //pmm setup
@@ -47,14 +46,13 @@ void kmain(void)
 
     //VM test
     void* phys = alloc_page();
-
     map_page(0x500000, (uint32_t)phys, 0x3);
 
-    //write to virtual address
+    //write to virtual address test
     volatile int* x = (int*)0x500000;
     *x = 123;
 
-    //remove mapping
+    //remove mapping test
     unmap_page(0x500000);
 
     //initialize filesystem

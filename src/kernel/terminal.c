@@ -8,7 +8,6 @@ void terminal_init()
 {
 }
 
-
 int terminal_read(char* buffer, uint32_t size)
 {
     return keyboard_read(buffer, size);
@@ -28,26 +27,22 @@ int terminal_readline(char* buffer, uint32_t size)
             continue;
         }
 
-
         if(c == '\n')
         {
             buffer[count] = 0;
             return count;
         }
 
-
         if(c == '\b')
         {
             if(count > 0)
             {
                 count--;
-
                 putchar('\b');
             }
 
             continue;
         }
-
 
         if(count < size - 1)
         {
