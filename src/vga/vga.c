@@ -3,7 +3,7 @@
 
 volatile uint16_t* vga = (uint16_t*)0xB8000;
 
-#define TERMINALHEIGHT 14
+#define TERMINALHEIGHT 25
 #define ROWS 25
 #define COLS 80
 

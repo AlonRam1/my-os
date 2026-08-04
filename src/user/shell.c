@@ -3,6 +3,7 @@
 #include <kernel/syscall.h>
 #include <kernel/string/string.h>
 #include <vga/vga.h>
+#include <user/commands.h>
 #include <stdint.h>
 
 //parse given string into command and parameters
@@ -24,29 +25,7 @@ static void shell_parse(char* line, char** command, char** argument)
 
 static void shell_execute(const char* command, const char* argument)
 {
-    if(streq(command, "echo"))
-    {
-        if(argument)
-            terminal_write(argument);
-
-        terminal_write("\n");
-    }
-    else if(streq(command, "ls"))
-    {
-        terminal_write("ls command\n");
-    }
-    else if(streq(command, "cat"))
-    {
-        terminal_write("cat command\n");
-    }
-    else if(streq(command, "clear"))
-    {
-       clearscreen(); 
-    }
-    else
-    {
-        terminal_write("Unknown command\n");
-    }
+	execute(command, argument);
 }
 
 void shell_task()
