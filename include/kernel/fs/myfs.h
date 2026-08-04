@@ -44,3 +44,7 @@ struct myfs_inode* myfs_find(const char* name);
 int myfs_write(struct myfs_inode* inode, const uint8_t* buffer, uint32_t size);
 
 int myfs_read(struct myfs_inode* inode, uint8_t* buffer, uint32_t size);
+
+struct myfs_inode* myfs_inode(int index);
+
+int myfs_delete(const char* name);

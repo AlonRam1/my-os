@@ -169,3 +169,40 @@ int myfs_read(struct myfs_inode* inode, uint8_t* buffer, uint32_t size)
 
     return size;
 }
+
+//find file by index
+struct myfs_inode* myfs_inode(int index)
+{
+    if(index < 0 || index >= MYFS_MAX_FILES)
+        return 0;
+
+    return &inodes[index];
+}
+
+//delete file
+int myfs_delete(const char* name)
+{
+    for(int i = 0; i < MYFS_MAX_FILES; i++)
+    {
+        if(inodes[i].used)
+        {
+            if(streq(inodes[i].name, name))
+            {
+                inodes[i].used = 0;
+                inodes[i].size = 0;
+                inodes[i].block = 0;
+
+                for(int j = 0; j < MYFS_NAME_LEN; j++)
+                {
+                    inodes[i].name[j] = 0;
+                }
+
+                myfs_write_inodes();
+
+                return 0;
+            }
+        }
+    }
+
+    return -1;
+}
