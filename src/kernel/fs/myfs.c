@@ -6,6 +6,19 @@ static struct myfs_superblock superblock;
 
 static struct myfs_inode inodes[MYFS_MAX_FILES];
 
+uint32_t current_directory = 0;
+
+static void myfs_clear_block(uint32_t block)
+{
+    uint8_t buffer[MYFS_BLOCK_SIZE];
+
+    for(int i = 0; i < MYFS_BLOCK_SIZE; i++)
+    {
+        buffer[i] = 0;
+    }
+
+    block_write(block, buffer);
+}
 
 //write inode table to disk
 static void myfs_write_inodes()
@@ -37,6 +50,18 @@ void myfs_format(uint32_t total_blocks)
         inodes[i].block = 0;
     }
 
+    //create root directory
+    inodes[0].used = 1;
+    inodes[0].size = 0;
+    inodes[0].block = MYFS_DATA_START;
+    inodes[0].parent = 0;
+    inodes[0].type = MYFS_DIRECTORY;
+
+    strcopy(inodes[0].name, "/");
+
+//initialize root directory block
+myfs_clear_block(inodes[0].block);
+
 
     //write inode table to disk
     myfs_write_inodes();
@@ -64,16 +89,15 @@ int myfs_mount()
     return 0;
 }
 
-
 //create a new file
-int myfs_create(const char* name)
+int myfs_create_file(const char* name, uint32_t parent)
 {
     //check if file already exists
     for(int i = 0; i < MYFS_MAX_FILES; i++)
     {
         if(inodes[i].used)
         {
-            if(streq(inodes[i].name, name))
+            if(streq(inodes[i].name, name) && inodes[i].parent == parent)
                 return -1;
         }
     }
@@ -89,10 +113,16 @@ int myfs_create(const char* name)
             //one data block per file for now
             inodes[i].block = MYFS_DATA_START + i;
 
+            inodes[i].parent = parent;
+            inodes[i].type = MYFS_FILE;
+
             strcopy(inodes[i].name, name);
 
             //save inode table
             myfs_write_inodes();
+	    
+            //add file to parent directory
+            myfs_add_directory_entry(parent, i, name);
 
             return 0;
         }
@@ -100,7 +130,6 @@ int myfs_create(const char* name)
 
     return -1;
 }
-
 
 //find file inode by name
 struct myfs_inode* myfs_find(const char* name)
@@ -205,4 +234,90 @@ int myfs_delete(const char* name)
     }
 
     return -1;
+}
+
+//create a new directory
+int myfs_create_directory(const char* name, uint32_t parent)
+{
+    //check if directory already exists
+    for(int i = 0; i < MYFS_MAX_FILES; i++)
+    {
+        if(inodes[i].used)
+        {
+            if(streq(inodes[i].name, name) && inodes[i].parent == parent)
+                return -1;
+        }
+    }
+
+    //find free inode
+    for(int i = 0; i < MYFS_MAX_FILES; i++)
+    {
+        if(!inodes[i].used)
+        {
+            inodes[i].used = 1;
+            inodes[i].size = 0;
+
+            //one data block per directory for now
+            inodes[i].block = MYFS_DATA_START + i;
+
+            inodes[i].parent = parent;
+            inodes[i].type = MYFS_DIRECTORY;
+
+            strcopy(inodes[i].name, name);
+
+            //initialize empty directory block
+            myfs_clear_block(inodes[i].block);
+
+            //save inode table
+            myfs_write_inodes();
+
+            //add directory to parent directory
+            myfs_add_directory_entry(parent, i, name);
+
+            return 0;
+        }
+    }
+
+    return -1;
+}
+
+int myfs_add_directory_entry(uint32_t directory, uint32_t inode, const char* name)
+{
+    uint8_t block[MYFS_BLOCK_SIZE];
+
+    block_read(inodes[directory].block, block);
+
+    struct myfs_dir_entry* entries = (struct myfs_dir_entry*)block;
+
+    for(int i = 0; i < MYFS_BLOCK_SIZE / sizeof(struct myfs_dir_entry); i++)
+    {
+        if(entries[i].inode == 0)
+        {
+            entries[i].inode = inode;
+            strcopy(entries[i].name, name);
+
+            block_write(inodes[directory].block, block);
+
+            return 0;
+        }
+    }
+
+    return -1;
+}
+
+//find file inside a directory
+struct myfs_inode* myfs_find_in_directory(uint32_t parent, const char* name)
+{
+    for(int i = 0; i < MYFS_MAX_FILES; i++)
+    {
+        if(inodes[i].used)
+        {
+            if(inodes[i].parent == parent && streq(inodes[i].name, name))
+            {
+                return &inodes[i];
+            }
+        }
+    }
+
+    return 0;
 }

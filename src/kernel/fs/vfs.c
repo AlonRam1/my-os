@@ -14,7 +14,7 @@ void vfs_init()
 
 int vfs_create(const char* name)
 {
-    return myfs_create(name);
+    return myfs_create_file(name, 0);
 }
 
 int vfs_open(const char* name)
@@ -47,11 +47,7 @@ int vfs_read(int fd, char* buffer, uint32_t size)
     if(!fd_table[fd].used)
         return -1;
 
-    int bytes = myfs_read(
-        fd_table[fd].file,
-        (uint8_t*)buffer,
-        size
-    );
+    int bytes = myfs_read(fd_table[fd].file, (uint8_t*)buffer, size);
 
     if(bytes > 0)
     {
@@ -69,11 +65,7 @@ int vfs_write(int fd, const char* buffer, uint32_t size)
     if(!fd_table[fd].used)
         return -1;
 
-    int bytes = myfs_write(
-        fd_table[fd].file,
-        (const uint8_t*)buffer,
-        size
-    );
+    int bytes = myfs_write(fd_table[fd].file, (const uint8_t*)buffer, size);
 
     if(bytes > 0)
     {
