@@ -77,10 +77,9 @@ static void ls_handler(const char* args)
 
     struct myfs_dir_entry* entries = (struct myfs_dir_entry*)block;
 
-
     for(int i = 0; i < MYFS_BLOCK_SIZE / sizeof(struct myfs_dir_entry); i++)
     {
-        if(entries[i].inode != 0)
+        if(block[i].inode != 0)
         {
             terminal_write(entries[i].name);
             terminal_write("\n");
@@ -127,7 +126,10 @@ static void rm_handler(const char* args)
 		terminal_write("rm: file does not exist\n");
 		return;
 	}
+
+	//delete component from filesystem
 	myfs_delete(args);
+	
 }
 
 static void mkdir_handler(const char* args)

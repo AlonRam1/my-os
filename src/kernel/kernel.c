@@ -62,9 +62,25 @@ void kmain(void)
     ata_init();
 
     //initialize MYFS
-    myfs_format(16);
-    myfs_mount();
-    
+    if(myfs_mount() == 0)
+   {
+        puts("MYFS mounted\n");
+    }
+    else
+    {
+        puts("MYFS not found, formatting\n");
+
+        myfs_format(16);
+
+        if(myfs_mount() == 0)
+        {
+            puts("MYFS mounted after format\n");
+        }
+        else
+        {
+            puts("MYFS mount failed\n");
+        }
+    }    
     //initialize keyboard
     keyboard_init();
 

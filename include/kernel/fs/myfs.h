@@ -66,3 +66,5 @@ int myfs_create_directory(const char* name, uint32_t parent);
 int myfs_add_directory_entry(uint32_t directory, uint32_t inode, const char* name);
 
 struct myfs_inode* myfs_find_in_directory(uint32_t parent, const char* name);
+
+int myfs_remove_directory_entry(uint32_t directory, const char* name);

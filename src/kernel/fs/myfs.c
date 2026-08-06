@@ -213,6 +213,8 @@ int myfs_delete(const char* name)
         {
             if(streq(inodes[i].name, name))
             {
+                uint32_t parent = inodes[i].parent;
+
                 inodes[i].used = 0;
                 inodes[i].size = 0;
                 inodes[i].block = 0;
@@ -221,6 +223,8 @@ int myfs_delete(const char* name)
                 {
                     inodes[i].name[j] = 0;
                 }
+
+                myfs_remove_directory_entry(parent, name);
 
                 myfs_write_inodes();
 
@@ -231,7 +235,6 @@ int myfs_delete(const char* name)
 
     return -1;
 }
-
 //create a new directory
 int myfs_create_directory(const char* name, uint32_t parent)
 {
@@ -253,7 +256,6 @@ int myfs_create_directory(const char* name, uint32_t parent)
             inodes[i].used = 1;
             inodes[i].size = 0;
 
-            //one data block per directory for now
             inodes[i].block = MYFS_DATA_START + i;
 
             inodes[i].parent = parent;
@@ -316,4 +318,35 @@ struct myfs_inode* myfs_find_in_directory(uint32_t parent, const char* name)
     }
 
     return 0;
+}
+
+int myfs_remove_directory_entry(uint32_t directory, const char* name)
+{
+    uint8_t block[MYFS_BLOCK_SIZE];
+
+    block_read(inodes[directory].block, block);
+
+    struct myfs_dir_entry* entries = (struct myfs_dir_entry*)block;
+
+    for(int i = 0; i < MYFS_BLOCK_SIZE / sizeof(struct myfs_dir_entry); i++)
+    {
+        if(entries[i].inode != 0)
+        {
+            if(streq(entries[i].name, name))
+            {
+                entries[i].inode = 0;
+
+                for(int j = 0; j < MYFS_NAME_LEN; j++)
+                {
+                    entries[i].name[j] = 0;
+                }
+
+                block_write(inodes[directory].block, block);
+
+                return 0;
+            }
+        }
+    }
+
+    return -1;
 }
