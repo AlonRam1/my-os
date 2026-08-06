@@ -79,7 +79,7 @@ static void ls_handler(const char* args)
 
     for(int i = 0; i < MYFS_BLOCK_SIZE / sizeof(struct myfs_dir_entry); i++)
     {
-        if(block[i].inode != 0)
+        if(entries[i].inode != 0)
         {
             terminal_write(entries[i].name);
             terminal_write("\n");
@@ -151,7 +151,6 @@ static void cd_handler(const char* args)
         return;
     }
 
-
     if(streq(args, ".."))
     {
         if(current_directory != 0)
@@ -164,10 +163,7 @@ static void cd_handler(const char* args)
         return;
     }
 
-
-    struct myfs_inode* dir =
-        myfs_find_in_directory(current_directory, args);
-
+    struct myfs_inode* dir = myfs_find_in_directory(current_directory, args);
 
     if(!dir)
     {
@@ -175,13 +171,11 @@ static void cd_handler(const char* args)
         return;
     }
 
-
     if(dir->type != MYFS_DIRECTORY)
     {
         terminal_write("cd: not a directory\n");
         return;
     }
-
 
     current_directory = dir - myfs_inode(0);
 }
