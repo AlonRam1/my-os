@@ -320,13 +320,26 @@ int myfs_add_directory_entry(uint32_t directory, uint32_t inode, const char* nam
 //find file inside a directory
 struct myfs_inode* myfs_find_in_directory(uint32_t parent, const char* name)
 {
-    for(int i = 0; i < MYFS_MAX_FILES; i++)
+    struct myfs_inode* current = myfs_inode(parent);
+
+    if(!current)
+        return 0;
+
+    uint8_t block[MYFS_BLOCK_SIZE];
+
+    block_read(current->block, block);
+
+    struct myfs_dir_entry* entries = (struct myfs_dir_entry*)block;
+
+    for(int i = 0; i < MYFS_BLOCK_SIZE / sizeof(struct myfs_dir_entry); i++)
     {
-        if(inodes[i].used)
+        if(entries[i].inode != 0)
         {
-            if(inodes[i].parent == parent && streq(inodes[i].name, name))
+            struct myfs_inode* inode = myfs_inode(entries[i].inode);
+
+            if(inode && streq(inode->name, name))
             {
-                return &inodes[i];
+                return inode;
             }
         }
     }
