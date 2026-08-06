@@ -20,7 +20,6 @@ const struct command commands[] =
 {
     { "echo", echo_handler },
     { "ls", ls_handler },
-    { "cat", cat_handler },
     { "clear", clear_handler },
     { "touch", touch_handler },
     { "rm", rm_handler },
@@ -85,11 +84,6 @@ static void ls_handler(const char* args)
             terminal_write("\n");
         }
     }
-}
-
-static void cat_handler(const char* args)
-{
-	terminal_write("cat command\n");
 }
 
 static void clear_handler(const char* args)
