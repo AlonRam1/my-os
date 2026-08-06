@@ -23,24 +23,21 @@ static void myfs_clear_block(uint32_t block)
 //write inode table to disk
 static void myfs_write_inodes()
 {
-    for(int i = 0; i < 8; i++)
+    for(int i = 0; i < MYFS_DATA_START - 1; i++)
     {
         block_write(MYFS_INODE_START + i, ((uint8_t*)inodes) + (i * MYFS_BLOCK_SIZE));
     }
 }
 
-
 //initialize a new filesystem on disk
 void myfs_format(uint32_t total_blocks)
 {
-    superblock.magic = MYFS_MAGIC;
+    superblock.magic = MYFS_MAGIC; //MYFS identifier for superblock
     superblock.total_blocks = total_blocks;
     superblock.free_blocks = total_blocks - MYFS_DATA_START;
 
-
     //write superblock to sector 0
     block_write(0, (uint8_t*)&superblock);
-
 
     //clear inode table
     for(int i = 0; i < MYFS_MAX_FILES; i++)
@@ -53,10 +50,9 @@ void myfs_format(uint32_t total_blocks)
     //create root directory
     inodes[0].used = 1;
     inodes[0].size = 0;
-    inodes[0].block = MYFS_DATA_START;
-    inodes[0].parent = 0;
+    inodes[0].block = MYFS_DATA_START; //reminder: block 0 is super block, blocks 1-MYFS_DATA_START store inodes (metadata)
+    inodes[0].parent = 0; //root dir has no parent
     inodes[0].type = MYFS_DIRECTORY;
-
     strcopy(inodes[0].name, "/");
 
 //initialize root directory block
@@ -80,8 +76,8 @@ int myfs_mount()
         return -1;
     }
 
-    //read inode table
-    for(int i = 0; i < 8; i++)
+    //write inodes into inode table
+    for(int i = 0; i < MYFS_DATA_START - 1; i++)
     {
         block_read(MYFS_INODE_START + i, ((uint8_t*)inodes) + (i * MYFS_BLOCK_SIZE));
     }
