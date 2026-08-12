@@ -56,7 +56,8 @@ void isr13_handler()
 
 void isr14_handler(uint32_t* regs)
 {
-   puts("INTERRUPT 14 CALLED\n"); 
+   puts("INTERRUPT 14 CALLED\n");
+   task_exit();
 }
 
 void isr128_handler(uint32_t* regs)

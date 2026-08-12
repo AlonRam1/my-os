@@ -91,9 +91,6 @@ void kmain(void)
     task_init();
     task_create(shell_task);
 
-    task_create_user(user_test1);
-    task_create_user(user_test2);
-
     //enable interrupts LAST
     asm volatile("sti");
 

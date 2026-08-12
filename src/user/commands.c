@@ -4,6 +4,7 @@
 #include <kernel/string/string.h>
 #include <kernel/fs/myfs.h>
 #include <kernel/fs/block.h>
+#include <user/programs.h>
 #include <stdint.h>
 
 static void echo_handler(const char* args);
@@ -14,6 +15,7 @@ static void touch_handler(const char* args);
 static void rm_handler(const char* args);
 static void mkdir_handler(const char* args);
 static void cd_handler(const char* args);
+static void run_handler(const char* args);
 
 
 const struct command commands[] =
@@ -25,6 +27,7 @@ const struct command commands[] =
     { "rm", rm_handler },
     { "mkdir", mkdir_handler },
     { "cd", cd_handler },
+    { "run", run_handler }
 };
 
 const uint32_t command_count = sizeof(commands) / sizeof(commands[0]);
@@ -172,6 +175,21 @@ static void cd_handler(const char* args)
     }
 
     current_directory = dir - myfs_inode(0);
+}
+
+static void run_handler(const char* args)
+{
+    if(args_empty(args))
+    {
+        terminal_write("run: argument missing\n");
+        return;
+    }
+
+    if(user_program_run(args) != 0)
+    {
+        terminal_write("run: program not found or could not be started\n");
+        return;
+    }
 }
 
 void execute(char* name, char* args)
