@@ -27,17 +27,51 @@ static void memtest_program()
 {
     syscall_write_string("MEMTEST: started\n");
 
-    volatile uint32_t value = 123;
+    //test 1: stack memory
+    syscall_write_string("MEMTEST: testing stack memory...\n");
 
-    syscall_write_string("MEMTEST: writing value...\n");
-    value = 456;
+    volatile uint32_t values[4];
 
-    if(value == 456)
-        syscall_write_string("MEMTEST: memory test passed\n");
-    else
-        syscall_write_string("MEMTEST: memory test failed\n");
+    values[0] = 0x12345678;
+    values[1] = 0xDEADBEEF;
+    values[2] = 0xAAAAAAAA;
+    values[3] = 0x55555555;
 
-    syscall_write_string("MEMTEST: exiting\n");
+    if(values[0] != 0x12345678 || values[1] != 0xDEADBEEF || values[2] != 0xAAAAAAAA || values[3] != 0x55555555)
+    {
+        syscall_write_string("MEMTEST: stack memory FAILED\n");
+        syscall_exit();
+    }
+
+    syscall_write_string("MEMTEST: stack memory passed\n");
+
+    //test 2: repeated writes and reads
+    syscall_write_string("MEMTEST: testing repeated memory access...\n");
+
+    volatile uint32_t value = 0;
+
+    for(uint32_t i = 0; i < 1000; i++)
+    {
+        value = i;
+
+        if(value != i)
+        {
+            syscall_write_string("MEMTEST: repeated access FAILED\n");
+            syscall_exit();
+        }
+    }
+
+    syscall_write_string("MEMTEST: repeated memory access passed\n");
+
+    //test 3: page fault
+    syscall_write_string("MEMTEST: testing page fault handling...\n");
+    syscall_write_string("MEMTEST: accessing unmapped memory...\n");
+
+    volatile uint32_t* bad_address = (uint32_t*)0x40000000;
+    *bad_address = 123;
+
+    //this should never execute if page fault handling works
+    syscall_write_string("MEMTEST: page fault FAILED\n");
 
     syscall_exit();
 }
