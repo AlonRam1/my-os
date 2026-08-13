@@ -91,7 +91,9 @@ void kmain(void)
     task_init();
     task_create(shell_task);
 
-    //enable interrupts LAST
+    puts("Welcome to MYOS! you can start writing commands to the operating system...\n>");
+
+    //enable interrupts
     asm volatile("sti");
 
 
