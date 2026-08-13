@@ -9,7 +9,6 @@
 
 static void echo_handler(const char* args);
 static void ls_handler(const char* args);
-static void cat_handler(const char* args);
 static void clear_handler(const char* args);
 static void touch_handler(const char* args);
 static void rm_handler(const char* args);
