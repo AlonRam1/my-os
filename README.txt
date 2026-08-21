@@ -32,9 +32,9 @@ MYOS greets you with a welcome message and presents you with a terminal screen. 
 
 #rm <arg>: remove file <arg> from current directory.
 
-#mkdir <arg> create new directory <arg>.
+#mkdir <arg>: create new directory <arg>.
 
-#cd <arg> move into directory <arg>.
+#cd <arg>: move into directory <arg>.
 
 #run <arg>: run script <arg>.
 
